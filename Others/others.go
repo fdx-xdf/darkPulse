@@ -115,7 +115,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("g++", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
 				err := cmd.Run()
 				if err != nil {
@@ -124,7 +124,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("g++", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
 				err := cmd.Run()
 				if err != nil {
@@ -160,7 +160,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("g++", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
 				err := cmd.Run()
 				if err != nil {
@@ -169,7 +169,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("g++", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
 				err := cmd.Run()
 				if err != nil {

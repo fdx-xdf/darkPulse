@@ -12,13 +12,13 @@ import (
 
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
-	inputFile := flag.String("i", "calc_shellcode.bin", "原始格式 Shellcode 的路径")
+	inputFile := flag.String("i", "calc_shellcode_64.bin", "原始格式 Shellcode 的路径")
 	encryption := flag.String("enc", "xor", "Shellcode加密方式 (例如, aes, xor)")
 	language := flag.String("lang", "c", "加载器的语言")
 	outFile := flag.String("o", "Program", "输出文件")
 	keyLength := flag.Int("k", 16, "加密的密钥长度")
-	obfuscation := flag.String("obf", "words", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
-	framework := flag.Int("f", 32, "选择32位还是64位")
+	obfuscation := flag.String("obf", "uuid", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
+	framework := flag.Int("f", 64, "选择32位还是64位")
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	loadingTechnique := flag.String("loading", "fiber", "请选择加载方式，支持callback,fiber,earlybird")
 	flag.Parse()

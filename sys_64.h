@@ -68,14 +68,14 @@ typedef VOID(KNORMAL_ROUTINE) (
 
 typedef KNORMAL_ROUTINE* PKNORMAL_ROUTINE;
 
-EXTERN_C NTSTATUS VAVWVM(
+EXTERN_C NTSTATUS VAV_NtWriteVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN PVOID BaseAddress,
 	IN PVOID Buffer,
 	IN SIZE_T NumberOfBytesToWrite,
 	OUT PSIZE_T NumberOfBytesWritten OPTIONAL);
 
-EXTERN_C NTSTATUS VAVAVM(
+EXTERN_C NTSTATUS VAV_NtAllocateVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN OUT PVOID * BaseAddress,
 	IN ULONG ZeroBits,
@@ -92,7 +92,7 @@ EXTERN_C NTSTATUS VAVNtQueueApcThread(
 
 EXTERN_C NTSTATUS VAVNtTestAlert();
 
-EXTERN_C NTSTATUS VAVPVM(
+EXTERN_C NTSTATUS VAV_NtProtectVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN OUT PVOID * BaseAddress,
 	IN OUT PSIZE_T RegionSize,

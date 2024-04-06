@@ -277,7 +277,7 @@ EXTERN_C PVOID VAV_GetRandomSyscallAddress(DWORD FunctionHash)
 }
 #if defined(__GNUC__)
 
-__declspec(naked) NTSTATUS VAVWVM(
+__declspec(naked) NTSTATUS VAV_NtWriteVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN PVOID BaseAddress,
 	IN PVOID Buffer,
@@ -305,7 +305,7 @@ __declspec(naked) NTSTATUS VAVWVM(
 	);
 }
 
-__declspec(naked) NTSTATUS VAVAVM(
+__declspec(naked) NTSTATUS VAV_NtAllocateVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN OUT PVOID * BaseAddress,
 	IN ULONG ZeroBits,
@@ -385,7 +385,7 @@ __declspec(naked) NTSTATUS VAVNtTestAlert()
 	);
 }
 
-__declspec(naked) NTSTATUS VAVPVM(
+__declspec(naked) NTSTATUS VAV_NtProtectVirtualMemory(
 	IN HANDLE ProcessHandle,
 	IN OUT PVOID * BaseAddress,
 	IN OUT PSIZE_T RegionSize,

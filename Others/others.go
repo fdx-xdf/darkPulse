@@ -25,7 +25,7 @@ type FlagOptions struct {
 
 func PrintUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  -i <path>: 原始64位原始格式Shellcode的路径")
+	fmt.Println("  -i <path>: 原始格式 Shellcode 的路径")
 	fmt.Println("  -enc <encryption>: Shellcode加密方式 (默认: aes)")
 	fmt.Println("  -lang <language>: 加载器的语言 (默认: c)")
 	fmt.Println("  -o <output>: 输出文件 (默认: Program)")
@@ -33,6 +33,7 @@ func PrintUsage() {
 	fmt.Println("  -obf <obfuscation>: 混淆Shellcode以降低熵值 (默认: uuid)")
 	fmt.Println("  -f <framework>: 目标架构32位还是64位")
 	fmt.Println("  -sandbox <true/false>: 是否开启反沙箱模式 (默认: true)")
+	fmt.Println("  -unhook <true/false>: 是否开启unhook模式 (默认: false,使用syscall加载)")
 	fmt.Println("  -loading <loadingTechnique>: 请选择加载方式，支持callback, fiber, earlybird (默认: fiber)")
 }
 

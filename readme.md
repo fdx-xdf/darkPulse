@@ -2,7 +2,7 @@
 
 目前只实现了c的模板
 
-支持aes/xor加密，uuid/words混淆，间接syscall调用windows api，callback和fiber两种加载方式
+支持aes/xor加密，uuid/words混淆，间接syscall下支持callback和fiber两种加载方式，unhook下支持callback，fiber，earlybird三种加载方式
 
 目前实现效果如下：
 
@@ -12,15 +12,17 @@
 
 360（未开核晶）：无检出
 
-![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1711691599173-9249fbf7-9a87-4175-9b67-b3303315cf90.png#averageHue=%23eef4e8&clientId=u6a213678-1bda-4&from=paste&height=613&id=u57fad8a0&originHeight=920&originWidth=1704&originalType=binary&ratio=1.5&rotation=0&showTitle=false&size=653395&status=done&style=none&taskId=ue8886f9f-69d5-4f73-a7de-2e1b4b44cbe&title=&width=1136)
+![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1712540772208-56ad496e-d10f-4509-8d5c-be5bca8aeda1.png#clientId=u8b198af0-b954-4&from=paste&height=907&id=u3224cbb3&originHeight=1360&originWidth=2201&originalType=binary&ratio=1.5&rotation=0&showTitle=false&size=711812&status=done&style=none&taskId=ue4289f80-7d64-4c82-87ab-558045b9d4d&title=&width=1467.3333333333333)
 
 火绒：无检出
 
-![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1711596362835-764a2654-c5c3-4756-8d14-06a78cef05f7.png#averageHue=%23fbf8f6&clientId=u723e99f6-9ffc-4&from=paste&height=563&id=u6518f191&originHeight=845&originWidth=1540&originalType=binary&ratio=1.5&rotation=0&showTitle=false&size=89947&status=done&style=none&taskId=u135de88f-fd73-4c4a-b967-27d473a7442&title=&width=1026.6666666666667)
+![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3.png#clientId=u990ef8ce-17ff-4&from=paste&height=413&id=uf773694c&originHeight=1493&originWidth=2560&originalType=binary&ratio=1.5&rotation=0&showTitle=false&size=267434&status=done&style=none&taskId=u6ef9bb21-ca36-407e-8485-d49cbc2d15d&title=&width=709)
 
+360（开启核晶）：无检出
+![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1712541933105-d742adb2-8f0c-473e-8b35-42b03bc5c6f7.png#clientId=u8b198af0-b954-4&from=paste&height=907&id=udd3a6cab&originHeight=1360&originWidth=2201&originalType=binary&ratio=1.5&rotation=0&showTitle=false&size=1233314&status=done&style=none&taskId=uc27fc9bc-28b3-4029-b272-3039a40bae8&title=&width=1467.3333333333333)
 to do list:
 
 - go模板
 - 更多加密算法
-- unhook
+~~- unhook~~
 - .....

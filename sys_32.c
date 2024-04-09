@@ -429,6 +429,45 @@ __declspec(naked) NTSTATUS VAV_NtProtectVirtualMemory(
 	);
 }
 
+__declspec(naked) NTSTATUS VAVNtQueueApcThread(
+	IN HANDLE ThreadHandle,
+	IN PKNORMAL_ROUTINE ApcRoutine,
+	IN PVOID ApcArgument1 OPTIONAL,
+	IN PVOID ApcArgument2 OPTIONAL,
+	IN PVOID ApcArgument3 OPTIONAL)
+{
+	asm(
+		"push ebp \n"
+		"mov ebp, esp \n"
+		"push 0x14BC1E11 \n"
+		"call _VAV_GetSyscallAddress \n"
+		"mov edi, eax \n"
+		"push 0x14BC1E11 \n"
+		"call _VAV_GetSyscallNumber \n"
+		"lea esp, [esp+4] \n"
+		"mov ecx, 0x5 \n"
+	"push_argument_14BC1E11: \n"
+		"dec ecx \n"
+		"push [ebp + 8 + ecx * 4] \n"
+		"jnz push_argument_14BC1E11 \n"
+		"mov ecx, eax \n"
+		"mov eax, ecx \n"
+		"lea ebx, [ret_address_epilog_14BC1E11] \n"
+		"push ebx \n"
+		"call do_sysenter_interrupt_14BC1E11 \n"
+		"lea esp, [esp+4] \n"
+	"ret_address_epilog_14BC1E11: \n"
+		"mov esp, ebp \n"
+		"pop ebp \n"
+		"ret \n"
+	"do_sysenter_interrupt_14BC1E11: \n"
+		"mov edx, esp \n"
+		"jmp edi \n"
+		"ret \n"
+	);
+}
+
+
 
 
 #endif

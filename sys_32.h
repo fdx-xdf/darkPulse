@@ -309,6 +309,13 @@ EXTERN_C NTSTATUS VAV_NtProtectVirtualMemory(
 	IN ULONG NewProtect,
 	OUT PULONG OldProtect);
 
+EXTERN_C NTSTATUS VAVNtQueueApcThread(
+	IN HANDLE ThreadHandle,
+	IN PKNORMAL_ROUTINE ApcRoutine,
+	IN PVOID ApcArgument1 OPTIONAL,
+	IN PVOID ApcArgument2 OPTIONAL,
+	IN PVOID ApcArgument3 OPTIONAL);
+
 
 
 

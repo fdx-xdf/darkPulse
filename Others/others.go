@@ -42,16 +42,17 @@ func PrintVersion() {
 
 func PrintUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  -i <path>: 原始格式 Shellcode 的路径")
-	fmt.Println("  -enc <encryption>: Shellcode加密方式 (默认: aes)")
-	fmt.Println("  -lang <language>: 加载器的语言 (默认: c)")
-	fmt.Println("  -o <output>: 输出文件 (默认: Program)")
-	fmt.Println("  -k <keyLength>: 加密的密钥长度 (默认: 16)")
-	fmt.Println("  -obf <obfuscation>: 混淆Shellcode以降低熵值 (默认: uuid)")
-	fmt.Println("  -f <framework>: 目标架构32位还是64位")
-	fmt.Println("  -sandbox <true/false>: 是否开启反沙箱模式 (默认: true)")
-	fmt.Println("  -unhook <true/false>: 是否开启unhook模式 (默认: false,使用syscall加载)")
-	fmt.Println("  -loading <loadingTechnique>: 请选择加载方式，支持callback, fiber, earlybird (默认: fiber)")
+	fmt.Println("  -h <help>: 显示帮助信息")
+	fmt.Println("  -i <path>: 指定原始格式 Shellcode 的文件路径")
+	fmt.Println("  -enc <encryption>: 设置 Shellcode 的加密方式 (默认为 'aes')")
+	fmt.Println("  -lang <language>: 选择加载器的语言 (默认为 'c'，可选值: c)")
+	fmt.Println("  -o <output>: 指定输出文件的名称 (默认为 'Program')")
+	fmt.Println("  -k <keyLength>: 设置加密密钥的长度，aes下只能选择16,默认为16")
+	fmt.Println("  -obf <obfuscation>: 选择混淆 Shellcode 的方式，以降低熵值 (默认为 'uuid'，可选值: uuid, words)")
+	fmt.Println("  -f <framework>: 选择目标架构，32或64(默认为 64，即64位)")
+	fmt.Println("  -sandbox <true/false>: 是否开启反沙箱模式 (默认为 'false'，即不开启)")
+	fmt.Println("  -unhook <true/false>: 是否使用 unhook 模式 (默认为 'false'，即使用系统调用)")
+	fmt.Println("  -loading <loadingTechnique>: 选择 Shellcode 的加载方式 (默认为 'fiber'，可选值: callback, fiber, earlybird)")
 }
 
 func PrintKeyDetails(key string) {

@@ -18,10 +18,10 @@ func Options() *Others.FlagOptions {
 	outFile := flag.String("o", "Program", "输出文件")
 	keyLength := flag.Int("k", 16, "加密的密钥长度，aes下只能选择16")
 	obfuscation := flag.String("obf", "uuid", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
-	framework := flag.Int("f", 32, "选择32位还是64位")
+	framework := flag.Int("f", 64, "选择32位还是64位")
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
-	loadingTechnique := flag.String("loading", "earlybird", "请选择加载方式，支持callback,fiber,earlybird")
+	loadingTechnique := flag.String("loading", "fiber", "请选择加载方式，支持callback,fiber,earlybird")
 	flag.Parse()
 
 	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique}

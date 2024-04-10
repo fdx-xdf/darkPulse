@@ -24,20 +24,16 @@ type FlagOptions struct {
 }
 
 func PrintVersion() {
-	darkPluse := `
-     _            _    _____  _                
-     | |          | |  |  __ \| |               
-   __| | __ _ _ __| | _| |__) | |_   _ ___  ___ 
-  / _' |/ _' | '__| |/ /  ___/| | | | / __|/ _ \
- | (_| | (_| | |  |   <| |    | | |_| \__ \  __/
-  \__,_|\__,_|_|  |_|\_\_|    |_|\__,_|___/\___| 
-
-                                  author fdx_xdf
-                                  version 1.0
-                                  2024.04									
-`
-	fmt.Println(darkPluse)
-
+	fmt.Println("      _            _    _____       _          ")
+	fmt.Println("     | |          | |  |  __ \\     | |         ")
+	fmt.Println("   __| | __ _ _ __| | _| |__) |   _| |___  ___ ")
+	fmt.Println("  / _` |/ _` | '__| |/ /  ___/ | | | / __|/ _ \\")
+	fmt.Println(" | (_| | (_| | |  |   <| |   | |_| | \\__ \\  __/")
+	fmt.Println("  \\__,_|\\__,_|_|  |_|\\_\\_|    \\__,_|_|___/\\___|")
+	fmt.Println("                                               ")
+	fmt.Println("                    author fdx_xdf             ")
+	fmt.Println("                    version 1.0                ")
+	fmt.Println("                    2024.04                    ")
 }
 
 func PrintUsage() {

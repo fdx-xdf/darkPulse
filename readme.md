@@ -1,4 +1,4 @@
-darkPluse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader。
+darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader。
 
 目前只实现了c语言的模板。
 
@@ -40,7 +40,7 @@ Usage:
 示例：
 
 ```
-darkPluse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
+darkPuse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
      _            _    _____  _
      | |          | |  |  __ \| |

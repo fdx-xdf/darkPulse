@@ -23,6 +23,23 @@ type FlagOptions struct {
 	Loading     string
 }
 
+func PrintVersion() {
+	darkPluse := `
+     _            _    _____  _                
+     | |          | |  |  __ \| |               
+   __| | __ _ _ __| | _| |__) | |_   _ ___  ___ 
+  / _' |/ _' | '__| |/ /  ___/| | | | / __|/ _ \
+ | (_| | (_| | |  |   <| |    | | |_| \__ \  __/
+  \__,_|\__,_|_|  |_|\_\_|    |_|\__,_|___/\___| 
+
+                                  author fdx_xdf
+                                  version 1.0
+                                  2024.04									
+`
+	fmt.Println(darkPluse)
+
+}
+
 func PrintUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  -i <path>: 原始格式 Shellcode 的路径")

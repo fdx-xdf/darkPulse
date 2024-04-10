@@ -1,16 +1,29 @@
-一个用go编写的shellcode Packer
+darkPluse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader。
 
-目前只实现了c的模板。
+目前只实现了c语言的模板。
 
 支持aes/xor加密，uuid/words混淆，支持间接syscall和unhook两种模式下的callback，fiber，earlybird三种加载方式。
 
 间接sysacll使用了SysWhispers3的项目，链接：[klezVirus/SysWhispers3: SysWhispers on Steroids - AV/EDR evasion via direct system calls. (github.com)](https://github.com/klezVirus/SysWhispers3)
 
-unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wtf)](https://killer.wtf/2022/01/19/CustomJmpUnhook.html)文中所讲述的方法，文中提到的github仓库https://github.com/trickster0/LdrLoadDll-Unhooking只实现了64位下的demo，我在[fdx-xdf/LdrLoadDll-Unhooking-x86-x64 (github.com)](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64)完善了32位和64位通用的一段代码。
+unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wtf)](https://killer.wtf/2022/01/19/CustomJmpUnhook.html)文中所讲述的方法，文中提到的github仓库https://github.com/trickster0/LdrLoadDll-Unhooking 只实现了64位下的demo，我在 [fdx-xdf/LdrLoadDll-Unhooking-x86-x64 (github.com)](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64) 完善了32位和64位通用的一段代码。
 
 使用方法：
 
+首先要配好gcc的环境，命令行运行`gcc -v`有反应即可
+
 ```
+     _            _    _____  _
+     | |          | |  |  __ \| |
+   __| | __ _ _ __| | _| |__) | |_   _ ___  ___
+  / _' |/ _' | '__| |/ /  ___/| | | | / __|/ _ \
+ | (_| | (_| | |  |   <| |    | | |_| \__ \  __/
+  \__,_|\__,_|_|  |_|\_\_|    |_|\__,_|___/\___|
+
+                                  author fdx_xdf
+                                  version 1.0
+                                  2024.04
+
 Usage:
   -i <path>: 原始格式 Shellcode 的路径
   -enc <encryption>: Shellcode加密方式 (默认: aes)
@@ -24,7 +37,7 @@ Usage:
   -loading <loadingTechnique>: 请选择加载方式，支持callback, fiber, earlybird (默认: fiber)
 ```
 
-注意：syscall下的earlybird方式由于某些bug并没有使用间接syscall方式加载，尽量不要使用。
+注意：syscall下的earlybird方式由于某些bug并没有使用间接syscall方式加载，尽量不要使用，另外xor+uuid的特征过于明显，尽量不要使用。
 
 目前实现效果如下：
 
@@ -50,3 +63,7 @@ to do list:
 - 分离加载
 - ~~- unhook~~
 - .....
+
+## 免责声明
+
+本项目仅用安全研究的学习交流和研究，强烈不建议您用于任何的实际途径（包括黑灰产交易、非法渗透攻击、割韭菜），网络不是法外之地！如果您使用该工具则应该自觉遵守以上要求。

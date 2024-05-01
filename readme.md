@@ -12,6 +12,9 @@ unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wt
 
 首先要配好gcc的环境，命令行运行`gcc -v`有反应即可
 
+在实战中推荐使用-sandbox参数，针对不同机器情况大概会休眠40s
+尽量使用aes+uuid的组合，针对不同的杀软多试试不同的混淆加密方式
+
 ```
       _            _    _____       _          
      | |          | |  |  __ \     | |         
@@ -21,7 +24,7 @@ unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wt
   \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|                                               
 
                                   author fdx_xdf
-                                  version 1.0
+                                  version 1.1
                                   2024.04
 
 Usage:
@@ -35,6 +38,7 @@ Usage:
   -sandbox <true/false>: 是否开启反沙箱模式 (默认: true)
   -unhook <true/false>: 是否开启unhook模式 (默认: false,使用间接syscall加载)
   -loading <loadingTechnique>: 请选择加载方式，支持callback, fiber, earlybird (默认: fiber)
+  -debug  <true/false>: 是否打印shellcode中间加密/混淆过程(默认为 'false'，即不打印)
 ```
 
 示例：
@@ -42,15 +46,15 @@ Usage:
 ```
 darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
-     _            _    _____  _
-     | |          | |  |  __ \| |
-   __| | __ _ _ __| | _| |__) | |_   _ ___  ___
-  / _' |/ _' | '__| |/ /  ___/| | | | / __|/ _ \
- | (_| | (_| | |  |   <| |    | | |_| \__ \  __/
-  \__,_|\__,_|_|  |_|\_\_|    |_|\__,_|___/\___|
+      _            _    _____       _          
+     | |          | |  |  __ \     | |         
+   __| | __ _ _ __| | _| |__) |   _| |___  ___ 
+  / _` |/ _` | '__| |/ /  ___/ | | | / __|/ _ \
+ | (_| | (_| | |  |   <| |   | |_| | \__ \  __/
+  \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|   
 
                                   author fdx_xdf
-                                  version 1.0
+                                  version 1.1
                                   2024.04
 
 开始为您打包exe
@@ -125,7 +129,12 @@ xc5, 0x6f, 0x9d, 0x44, 0x8c, 0xd2, 0xbb, 0xc6, 0xd1, 0xe0, 0x7d, 0x48
 360（开启核晶）：无检出（使用syscall和unhook两种方式生成的exe均成功绕过核晶）
 
 ![image.png](https://cdn.nlark.com/yuque/0/2024/png/40360538/1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_1125%2Climit_0)
-to do list:
+
+## 更新日志
+
+2024.5.1	优化了错误提示，解决了部分bug，优化了unhook模板，新增debug模式，可以选择是否打印中间加密/混淆过程
+
+## to do list:
 
 - go模板
 - 更多加密算法
@@ -136,4 +145,6 @@ to do list:
 ## 免责声明
 
 本项目仅用安全研究的学习交流和研究，强烈不建议您用于任何的实际途径（包括黑灰产交易、非法渗透攻击、割韭菜），网络不是法外之地！如果您使用该工具则应该自觉遵守以上要求。
+
+如果遇到问题可以提交issue，也可以通过企鹅号联系我：MTM1MDE0MTk0MA==
 

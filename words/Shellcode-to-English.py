@@ -1,6 +1,5 @@
 import sys
 import random
-import requests
 import os
 
 def generate_words():

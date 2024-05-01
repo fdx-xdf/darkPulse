@@ -12,7 +12,7 @@ import (
 
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
-	inputFile := flag.String("i", "", "原始格式 Shellcode 的路径")
+	inputFile := flag.String("i", "calc_shellcode_64.bin", "原始格式 Shellcode 的路径")
 	encryption := flag.String("enc", "aes", "Shellcode加密方式 (例如, aes, xor)")
 	language := flag.String("lang", "c", "加载器的语言")
 	outFile := flag.String("o", "Program", "输出文件")
@@ -22,9 +22,10 @@ func Options() *Others.FlagOptions {
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
 	loadingTechnique := flag.String("loading", "fiber", "请选择加载方式，支持callback,fiber,earlybird")
+	debug := flag.Bool("debug", false, "是否打印shellcode中间加密/混淆过程")
 	flag.Parse()
 
-	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique}
+	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique, Debug: *debug}
 }
 
 func main() {
@@ -45,10 +46,14 @@ func main() {
 	hexShellcode := Converters.ShellcodeToHex(string(shellcodeBytes))
 	//获得模板格式的shellcode
 	formattedHexShellcode := Converters.FormattedHexShellcode(hexShellcode)
-	fmt.Println("原始shellcode:" + formattedHexShellcode + "\n")
+	if options.Debug == true {
+		fmt.Println("原始shellcode:" + formattedHexShellcode + "\n")
+	}
 	//进行加密操作
 	hexEncryptShellcode, Key, iv := Encrypt.Encryption(shellcodeBytes, options.Encryption, options.KeyLength)
-	fmt.Println("进行加密后的shellcode：" + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
+	if options.Debug == true {
+		fmt.Println("进行加密后的shellcode：" + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
+	}
 	//进行混淆操作
 	var (
 		uuidStrings string
@@ -57,6 +62,15 @@ func main() {
 	)
 	if options.Obfuscation != "" {
 		uuidStrings, words, dataset = Encrypt.Obfuscation(options.Obfuscation, hexEncryptShellcode)
+	}
+	if options.Debug == true {
+		if uuidStrings != "" {
+			fmt.Printf("[+] Generated UUIDs:")
+			fmt.Println(uuidStrings)
+		} else {
+			fmt.Println("[+] Generated dataset" + string(dataset) + "\n")
+			fmt.Println("[+] Generated words:" + string(words) + "\n")
+		}
 	}
 
 	//生成模板并写到文件中 把所有需要的都传过去

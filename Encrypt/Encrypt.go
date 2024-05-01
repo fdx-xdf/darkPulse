@@ -155,12 +155,12 @@ func Obfuscation(obfuscation string, shellcodeString string) (string, string, st
 			fmt.Println("Error:", err)
 
 		}
-		fmt.Printf("[+] Generated UUIDs:")
-		// 输出UUIDs
-		for _, uuid := range uuids {
-			fmt.Print("\"", uuid, "\",\n")
-		}
-		fmt.Println("")
+		//fmt.Printf("[+] Generated UUIDs:")
+		//// 输出UUIDs
+		//for _, uuid := range uuids {
+		//	fmt.Print("\"", uuid, "\",\n")
+		//}
+		//fmt.Println("")
 		var uuidsString string
 		for _, uuid := range uuids {
 			uuidsString += "\"" + uuid + "\","
@@ -183,9 +183,18 @@ func Obfuscation(obfuscation string, shellcodeString string) (string, string, st
 		words_path := filepath.Join(dir, "words", "words.txt")
 		dataset_path := filepath.Join(dir, "words", "dataset.txt")
 		cmd := exec.Command("python", dir1, dir2)
-		_, err = cmd.CombinedOutput()
+		// 捕获标准输出和标准错误
+		var stdout, stderr bytes.Buffer
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		err = cmd.Run()
 		if err != nil {
-			fmt.Printf("Error executing Python script:", err)
+			fmt.Println("编译失败:", err)
+			// 获取标准错误的内容
+			stderrString := stderr.String()
+			if stderrString != "" {
+				fmt.Println("标准错误:", stderrString)
+			}
 			return "", "", ""
 		}
 		words, err := ioutil.ReadFile(words_path)
@@ -197,8 +206,8 @@ func Obfuscation(obfuscation string, shellcodeString string) (string, string, st
 			log.Fatal(err)
 		}
 
-		fmt.Println("[+] Generated dataset" + string(dataset) + "\n")
-		fmt.Println("[+] Generated words:" + string(dataset) + "\n")
+		//fmt.Println("[+] Generated dataset" + string(dataset) + "\n")
+		//fmt.Println("[+] Generated words:" + string(words) + "\n")
 		return "", string(words), string(dataset)
 	}
 	return "", "", ""

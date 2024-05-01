@@ -12,7 +12,7 @@ import (
 
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
-	inputFile := flag.String("i", "calc_shellcode_64.bin", "原始格式 Shellcode 的路径")
+	inputFile := flag.String("i", "", "原始格式 Shellcode 的路径")
 	encryption := flag.String("enc", "aes", "Shellcode加密方式 (例如, aes, xor)")
 	language := flag.String("lang", "c", "加载器的语言")
 	outFile := flag.String("o", "Program", "输出文件")

@@ -21,47 +21,34 @@ darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的sh
 在实战中推荐使用-sandbox参数，针对不同机器情况大概会休眠40s
 _            _    _____       _
 
-​     | |          | |  |  __ \     | |         
-
-   __| | __ _ _ __| | _| |__) |   _| |___  ___ 
-
+```
+darkPulse.exe -i calc_shellcode.bin -h
+      _            _    _____       _
+     | |          | |  |  __ \     | |
+   __| | __ _ _ __| | _| |__) |   _| |___  ___
   / _` |/ _` | '__| |/ /  ___/ | | | / __|/ _ \
-
  | (_| | (_| | |  |   <| |   | |_| | \__ \  __/
+  \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|
 
-  \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|                                               
-
-
-​                                  author fdx_xdf
-
-​                                  version 1.2
-
-​                                  2024.05
-
+                    author fdx_xdf
+                    version 1.2
+                    2024.05
 
 Usage:
-
+    
+  -h <help>: 显示帮助信息
   -i <path>: 原始格式 Shellcode 的路径
-
   -enc <encryption>: Shellcode加密方式 (默认: aes)
-
   -lang <language>: 加载器的语言 (默认: c)
-
   -o <output>: 输出文件 (默认: Program)
-
   -k <keyLength>: 加密的密钥长度 (默认: 16)
-
   -obf <obfuscation>: 混淆Shellcode以降低熵值 (默认: uuid)
-
   -f <framework>: 目标架构32位还是64位
-
   -sandbox <true/false>: 是否开启反沙箱模式 (默认: true)
-
   -unhook <true/false>: 是否开启unhook模式 (默认: false,使用间接syscall加载)
-
   -loading <loadingTechnique>: 请选择加载方式，支持callback, fiber, earlybird (默认: callback)
-
   -debug  <true/false>: 是否打印shellcode中间加密/混淆过程(默认为 'false'，即不打印)
+```
 
 示例：
 

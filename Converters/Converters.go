@@ -24,7 +24,7 @@ func OriginalShellcode(options *Others.FlagOptions) []byte {
 			log.Fatalf("Failed to get the current working directory: %v", err)
 		}
 		dir1 := filepath.Join(dir, "T00ls", "sgn.exe")
-		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile, "-S")
+		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile)
 
 		// 运行命令并等待它完成
 		err = cmd.Run()
@@ -38,7 +38,7 @@ func OriginalShellcode(options *Others.FlagOptions) []byte {
 			log.Fatalf("Failed to get the current working directory: %v", err)
 		}
 		dir1 := filepath.Join(dir, "T00ls", "sgn")
-		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile, "-S")
+		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile)
 
 		// 运行命令并等待它完成
 		err = cmd.Run()

@@ -2,7 +2,7 @@ darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的sh
 
 目前只实现了c语言的模板。
 
-特点如下：
+## 特点
 
 - 使用sgn编码，使用了[EgeBalci/sgn: Shikata ga nai (仕方がない) encoder ported into go with several improvements (github.com)](https://github.com/EgeBalci/sgn)提供的二进制文件。
 - 支持aes/xor加密，uuid/words混淆，支持间接syscall和unhook两种模式下的callback，fiber，earlybird三种加载方式。
@@ -11,15 +11,17 @@ darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的sh
 
 - unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wtf)](https://killer.wtf/2022/01/19/CustomJmpUnhook.html)文中所讲述的方法，文中提到的github仓库https://github.com/trickster0/LdrLoadDll-Unhooking 只实现了64位下的demo，我在 [fdx-xdf/LdrLoadDll-Unhooking-x86-x64 (github.com)](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64) 完善了32位和64位通用的一段代码。
 
-
-使用方法：
+## 使用方法
 
 首先要配好gcc的环境，命令行运行`gcc -v`有反应即可
 
 为了规避内存扫描会休眠10s左右，所以并不能一下就上线
 
 在实战中推荐使用-sandbox参数，针对不同机器情况大概会休眠40s
+
 _            _    _____       _
+
+示例1：
 
 ```
 darkPulse.exe -i calc_shellcode.bin -h
@@ -50,7 +52,7 @@ Usage:
   -debug  <true/false>: 是否打印shellcode中间加密/混淆过程(默认为 'false'，即不打印)
 ```
 
-示例：
+示例2：
 
 ```
 darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
@@ -117,7 +119,7 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 2024.5.4	解决了部分bug，新增加 sgn 编码工具，增加静态规避效果
 
-目前实现效果如下：
+## 实现效果
 
 5.1日师傅们的测试
 

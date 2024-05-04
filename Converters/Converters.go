@@ -1,20 +1,60 @@
 package Converters
 
 import (
+	"MyPacker/Others"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 )
 
-func OriginalShellcode(inputFile string) []byte {
-	fileContent, err := ioutil.ReadFile(inputFile)
+func OriginalShellcode(options *Others.FlagOptions) []byte {
+	fmt.Println("[+] 正在使用 sgn 工具进行编码\n")
+	switch runtime.GOOS {
+	case "windows":
+		//windows下
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatalf("Failed to get the current working directory: %v", err)
+		}
+		dir1 := filepath.Join(dir, "T00ls", "sgn.exe")
+		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile, "-S")
+
+		// 运行命令并等待它完成
+		err = cmd.Run()
+		if err != nil {
+			log.Fatalf("Failed to execute command: %v", err)
+		}
+	case "darwin": // macOS 的 GOOS 标识符是 darwin
+		// macOS 系统执行的命令
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatalf("Failed to get the current working directory: %v", err)
+		}
+		dir1 := filepath.Join(dir, "T00ls", "sgn")
+		cmd := exec.Command(dir1, "-a", strconv.Itoa(options.Framework), "-i", options.InputFile, "-S")
+
+		// 运行命令并等待它完成
+		err = cmd.Run()
+		if err != nil {
+			log.Fatalf("Failed to execute command: %v", err)
+		}
+	}
+	var file = options.InputFile + ".sgn"
+	fileContent, err := ioutil.ReadFile(file)
 	if err != nil {
 		fmt.Println("Filed to open inputFile", err)
 		os.Exit(-1)
 	}
+
 	return []byte(fileContent)
+
 }
 
 func ShellcodeToHex(shellcode string) string {

@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+//CGO_ENABLED=0,GOOS=darwin,GOARCH=amd64
+
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
 	inputFile := flag.String("i", "", "原始格式 Shellcode 的路径")
@@ -17,11 +19,11 @@ func Options() *Others.FlagOptions {
 	language := flag.String("lang", "c", "加载器的语言")
 	outFile := flag.String("o", "Program", "输出文件")
 	keyLength := flag.Int("k", 16, "加密的密钥长度，aes下只能选择16")
-	obfuscation := flag.String("obf", "uuid", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
-	framework := flag.Int("f", 64, "选择32位还是64位")
+	obfuscation := flag.String("obf", "words", "混淆 Shellcode 以降低熵值 (i.e.,uuid,words)")
+	framework := flag.Int("f", 32, "选择32位还是64位")
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
-	loadingTechnique := flag.String("loading", "fiber", "请选择加载方式，支持callback,fiber,earlybird")
+	loadingTechnique := flag.String("loading", "callback", "请选择加载方式，支持callback,fiber,earlybird")
 	debug := flag.Bool("debug", false, "是否打印shellcode中间加密/混淆过程")
 	flag.Parse()
 
@@ -39,20 +41,20 @@ func main() {
 		Others.PrintUsage()
 		os.Exit(0)
 	}
-	fmt.Println("开始为您打包exe\n")
+	fmt.Println("[+] 开始为您打包exe\n")
 	//获取原始shellcode用于加密
-	shellcodeBytes := Converters.OriginalShellcode(options.InputFile)
+	shellcodeBytes := Converters.OriginalShellcode(options)
 	//获得16进制的shellcode
 	hexShellcode := Converters.ShellcodeToHex(string(shellcodeBytes))
 	//获得模板格式的shellcode
 	formattedHexShellcode := Converters.FormattedHexShellcode(hexShellcode)
 	if options.Debug == true {
-		fmt.Println("原始shellcode:" + formattedHexShellcode + "\n")
+		fmt.Println("[+] sgn 编码后的shellcode:" + formattedHexShellcode + "\n")
 	}
 	//进行加密操作
 	hexEncryptShellcode, Key, iv := Encrypt.Encryption(shellcodeBytes, options.Encryption, options.KeyLength)
 	if options.Debug == true {
-		fmt.Println("进行加密后的shellcode：" + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
+		fmt.Println("[+] 进行加密后的shellcode：" + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
 	}
 	//进行混淆操作
 	var (

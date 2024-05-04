@@ -34,8 +34,8 @@ func PrintVersion() {
 	fmt.Println("  \\__,_|\\__,_|_|  |_|\\_\\_|    \\__,_|_|___/\\___|")
 	fmt.Println("                                               ")
 	fmt.Println("                    author fdx_xdf             ")
-	fmt.Println("                    version 1.1                ")
-	fmt.Println("                    2024.04                    ")
+	fmt.Println("                    version 1.2                ")
+	fmt.Println("                    2024.05                    ")
 }
 
 func PrintUsage() {
@@ -50,7 +50,7 @@ func PrintUsage() {
 	fmt.Println("  -f <framework>: 选择目标架构，32或64(默认为 64，即64位)")
 	fmt.Println("  -sandbox <true/false>: 是否开启反沙箱模式 (默认为 'false'，即不开启)")
 	fmt.Println("  -unhook <true/false>: 是否使用 unhook 模式 (默认为 'false'，即使用系统调用)")
-	fmt.Println("  -loading <loadingTechnique>: 选择 Shellcode 的加载方式 (默认为 'fiber'，可选值: callback, fiber, earlybird)")
+	fmt.Println("  -loading <loadingTechnique>: 选择 Shellcode 的加载方式 (默认为 'callback'，可选值: callback, fiber, earlybird)")
 	fmt.Println("  -debug  <true/false>: 是否打印shellcode中间加密/混淆过程(默认为 'false'，即不打印)")
 }
 
@@ -128,7 +128,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			case "words":
 				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
@@ -146,7 +146,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			}
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
@@ -167,7 +167,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			case "words":
 				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
@@ -185,7 +185,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			}
 		}
 	case 64:
@@ -209,7 +209,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			case "words":
 				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
@@ -227,7 +227,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			}
 		case "xor":
 			switch strings.ToLower(options.Obfuscation) {
@@ -248,7 +248,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			case "words":
 				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
 				// 执行命令并等待其完成
@@ -266,7 +266,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 					}
 					return
 				}
-				fmt.Printf("编译成功: " + outexe)
+				fmt.Printf("[+] 编译成功: " + outexe)
 			}
 		}
 	default:

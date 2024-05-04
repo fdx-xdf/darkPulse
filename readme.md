@@ -34,9 +34,9 @@ _            _    _____       _
 
 ​                                  author fdx_xdf
 
-​                                  version 1.1
+​                                  version 1.2
 
-​                                  2024.04
+​                                  2024.05
 
 
 Usage:

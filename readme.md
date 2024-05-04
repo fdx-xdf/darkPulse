@@ -126,7 +126,7 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ## 更新日志
 
-2024.5.1	优化了错误提示，解决了部分bug，优化了unhook模板，新增debug模式，可以选择是否打印中间加密/混淆过程
+2024.5.1	优化了错误提示，解决了部分bug，优化了unhook模板，新增debug模式，可以选择是否打印中间加密/混淆过程，新增加编译好的Mac可执行文件
 
 2024.5.4	解决了部分bug，新增加 sgn 编码工具，增加静态规避效果
 
@@ -134,23 +134,23 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 5.1日师傅们的测试
 
-![image-20240504135314215](./images/41070139c5a430be6a6030dd41395556.png))
+![image-20240504135314215](./images/41070139c5a430be6a6030dd41395556.png)
 
 微步云沙箱无检出
 
-![image.png](.\images\1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6.png)
+![image.png](./images/1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6.png)
 
 360（未开核晶）：无检出
 
-![image](.\images\c3dcf083-609e-4b55-87c1-8311e5d28a40)
+![image](./images/c3dcf083-609e-4b55-87c1-8311e5d28a40)
 
 火绒：无检出
 
-![image.png](.\images\1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3.png)
+![image.png](./images/1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3.png)
 
 360（开启核晶）：无检出（使用syscall和unhook两种方式生成的exe均成功绕过核晶）
 
-![image.png](.\images\1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5.png)
+![image.png](./images/1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5.png)
 
 ## to do list:
 

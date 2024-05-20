@@ -155,7 +155,7 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ![image-{09175BED-C614-467c-80E5-893FC71A744C](./images/{09175BED-C614-467c-80E5-893FC71A744C}.png)
 
-![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](.\images\{F8DEF2E2-925B-4add-AC29-E284B698F2DB}.png)
+![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](./images/{F8DEF2E2-925B-4add-AC29-E284B698F2DB}.png)
 
 5.1日师傅们的测试
 

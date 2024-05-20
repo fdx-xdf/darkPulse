@@ -2,9 +2,10 @@ module MyPacker
 
 go 1.21
 
-require (
-	github.com/google/uuid v1.6.0
-	github.com/satori/go.uuid v1.2.0
-)
+require github.com/EgeBalci/sgn v0.0.0-20240222152057-f54fa65b57e2
 
-require gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+require (
+	github.com/EgeBalci/keystone-go v0.0.0-20200525180613-e6c7cd32ceae // indirect
+	github.com/mattn/go-runewidth v0.0.7 // indirect
+	github.com/olekukonko/tablewriter v0.0.4 // indirect
+)

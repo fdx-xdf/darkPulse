@@ -4,20 +4,48 @@ darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的sh
 
 ## 特点
 
-- 使用sgn编码，使用了[EgeBalci/sgn: Shikata ga nai (仕方がない) encoder ported into go with several improvements (github.com)](https://github.com/EgeBalci/sgn)提供的二进制文件。
+- 使用sgn编码，使用了 [EgeBalci/sgn ](https://github.com/EgeBalci/sgn)提供的二进制文件。
 - 支持aes/xor加密，uuid/words混淆，支持间接syscall和unhook两种模式下的callback，fiber，earlybird三种加载方式。
 
-- 间接sysacll使用了SysWhispers3的项目，链接：[klezVirus/SysWhispers3: SysWhispers on Steroids - AV/EDR evasion via direct system calls. (github.com)](https://github.com/klezVirus/SysWhispers3)
+- 间接sysacll参考了SysWhispers3的项目，链接：[klezVirus/SysWhispers3](https://github.com/klezVirus/SysWhispers3)
 
-- unhook使用了[自定义跳转函数的unhook方法 - root@Ev1LAsH ~ (killer.wtf)](https://killer.wtf/2022/01/19/CustomJmpUnhook.html)文中所讲述的方法，文中提到的github仓库https://github.com/trickster0/LdrLoadDll-Unhooking 只实现了64位下的demo，我在 [fdx-xdf/LdrLoadDll-Unhooking-x86-x64 (github.com)](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64) 完善了32位和64位通用的一段代码。
+- unhook使用了 [自定义跳转函数的unhook方法](https://killer.wtf/2022/01/19/CustomJmpUnhook.html) 文中所讲述的方法，文中提到的github仓库 [trickster0/LdrLoadDll-Unhooking](https://github.com/trickster0/LdrLoadDll-Unhooking) 只实现了64位下的demo，我在 [LdrLoadDll-Unhooking-x86-x64](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64) 中完善了32位和64位通用的一段代码。
 
 ## 使用方法
 
-首先要配好gcc的环境，命令行运行`gcc -v`有反应即可
+### C模板
+
+首先要配好gcc的环境，命令行运行`gcc -v` 有反应
+
+个人测试gcc版本
+
+`gcc version 8.1.0 (x86_64-posix-sjlj-rev0, Built by MinGW-W64 project)`
+
+如果不一样可能会出现bug
+
+### Rust模板
+
+注意：目前Rust模板只支持Unhook选项。
+
+配置环境参考文章 [Windows 下使用MSYS2，GNU，非MSVC环境安装Rust方法 ](https://zhuanlan.zhihu.com/p/613466378)，个人安装的是 nightly 版本，但是stable版本应该也可以。
+
+个人工具链配置
+
+```
+C:>rustup toolchain list
+nightly-i686-pc-windows-gnu
+nightly-x86_64-pc-windows-gnu (default)
+```
+
+其中 i686 是为了编译32位下目标设置的，可以使用`rustup default nightly-x86_64-pc-windows-gnu`调整默认工具链，工具使用时默认64位工具链就可以，但是如果需要编译32位loader需要安装 i686 的工具链，在上面的参考文章对应地方稍微改一下就行。
+
+### 其他说明
 
 为了规避内存扫描会休眠10s左右，所以并不能一下就上线
 
 在实战中推荐使用-sandbox参数，针对不同机器情况大概会休眠40s
+
+开源之后免杀性能肯定会有所下降，但是程序提供了多个参数可以选择，有的参数组合还是可以Bypass的。
 
 _            _    _____       _
 
@@ -33,7 +61,7 @@ darkPulse.exe -i calc_shellcode.bin -h
   \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|
 
                     author fdx_xdf
-                    version 1.2
+                    version 2.0
                     2024.05
 
 Usage:
@@ -41,7 +69,7 @@ Usage:
   -h <help>: 显示帮助信息
   -i <path>: 原始格式 Shellcode 的路径
   -enc <encryption>: Shellcode加密方式 (默认: aes)
-  -lang <language>: 加载器的语言 (默认: c)
+  -lang <language>: 选择加载器的语言 (默认为 'c'，可选值: c,rust)
   -o <output>: 输出文件 (默认: Program)
   -k <keyLength>: 加密的密钥长度 (默认: 16)
   -obf <obfuscation>: 混淆Shellcode以降低熵值 (默认: uuid)
@@ -115,11 +143,19 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ## 更新日志
 
-2024.5.1	优化了错误提示，解决了部分bug，优化了unhook模板，新增debug模式，可以选择是否打印中间加密/混淆过程，新增加编译好的Mac可执行文件
+2024.5.20	解决了部分bug，新增 rust 模板，使用方法见上面说明
 
 2024.5.4	解决了部分bug，新增加 sgn 编码工具，增加静态规避效果
 
+2024.5.1	优化了错误提示，解决了部分bug，优化了unhook模板，新增debug模式，可以选择是否打印中间加密/混淆过程，新增加编译好的Mac可执行文件
+
 ## 实现效果
+
+5.20 新增Rust模板，测试如下：
+
+![image-{09175BED-C614-467c-80E5-893FC71A744C](./images/{09175BED-C614-467c-80E5-893FC71A744C}.png)
+
+![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](.\images\{F8DEF2E2-925B-4add-AC29-E284B698F2DB}.png)
 
 5.1日师傅们的测试
 
@@ -144,7 +180,7 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 ## to do list:
 
 - Rust 模板
-- 更多加密算法
+- ~~更多加密算法(由于使用了sgn编码，加密其实没有那么大的必要了)~~
 - 分离加载
 - ~~- unhook~~
 - .....
@@ -154,4 +190,8 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 本项目仅用安全研究的学习交流和研究，强烈不建议您用于任何的实际途径（包括黑灰产交易、非法渗透攻击、割韭菜），网络不是法外之地！如果您使用该工具则应该自觉遵守以上要求。
 
 如果遇到问题可以提交issue，也可以通过企鹅号联系我：MTM1MDE0MTk0MA==
+
+## Stargazers over time
+
+![Stargazers over time](https://starchart.cc/fdx-xdf/darkPulse.svg?variant=adaptive)
 

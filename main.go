@@ -10,7 +10,10 @@ import (
 	"os"
 )
 
-//CGO_ENABLED=0,GOOS=darwin,GOARCH=amd64
+//set CGO_ENABLED=0
+//set GOOS=darwin
+//set GOARCH=amd64
+//-ldflags="-s -w" -o darkPulse.exe
 
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
@@ -24,7 +27,7 @@ func Options() *Others.FlagOptions {
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
 	loadingTechnique := flag.String("loading", "callback", "请选择加载方式，支持callback,fiber,earlybird")
-	debug := flag.Bool("debug", false, "是否打印shellcode中间加密/混淆过程")
+	debug := flag.Bool("debug", true, "是否打印shellcode中间加密/混淆过程")
 	flag.Parse()
 
 	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique, Debug: *debug}
@@ -63,7 +66,7 @@ func main() {
 		dataset     string
 	)
 	if options.Obfuscation != "" {
-		uuidStrings, words, dataset = Encrypt.Obfuscation(options.Obfuscation, hexEncryptShellcode)
+		uuidStrings, words, dataset = Encrypt.Obfuscation(options, hexEncryptShellcode)
 	}
 	if options.Debug == true {
 		if uuidStrings != "" {

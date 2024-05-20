@@ -43,7 +43,7 @@ func PrintUsage() {
 	fmt.Println("  -h <help>: 显示帮助信息")
 	fmt.Println("  -i <path>: 指定原始格式 Shellcode 的文件路径")
 	fmt.Println("  -enc <encryption>: 设置 Shellcode 的加密方式 (默认为 'aes')")
-	fmt.Println("  -lang <language>: 选择加载器的语言 (默认为 'c'，可选值: c)")
+	fmt.Println("  -lang <language>: 选择加载器的语言 (默认为 'c'，可选值: c,rust)")
 	fmt.Println("  -o <output>: 指定输出文件的名称 (默认为 'Program')")
 	fmt.Println("  -k <keyLength>: 设置加密密钥的长度，aes下只能选择16,默认为16")
 	fmt.Println("  -obf <obfuscation>: 选择混淆 Shellcode 的方式，以降低熵值 (默认为 'uuid'，可选值: uuid, words)")
@@ -85,193 +85,160 @@ func DetectNotification(key int) int {
 	return keyNotification
 }
 
-func SaveTamplate2File(filename string, tamplate string) {
-	// Open a file for writing. If the file doesn't exist, it will be created.
+func SaveTemplateToFile(filename string, template string) {
+	// 确保目录存在
+	dir := filepath.Dir(filename)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		fmt.Println("创建目录时出错:", err)
+		return
+	}
+
+	// 打开一个文件进行写入。如果文件不存在，将会创建该文件。
 	file, err := os.Create(filename)
 	if err != nil {
-		fmt.Println("Error creating file:", err)
+		fmt.Println("创建文件时出错:", err)
 		return
 	}
-	defer file.Close() // Close the file when the function exits
+	defer file.Close() // 在函数退出时关闭文件
 
-	// Write the variable value to the file
-	_, err = fmt.Fprintln(file, tamplate)
+	// 将变量值写入文件
+	_, err = fmt.Fprintln(file, template)
 	if err != nil {
-		fmt.Println("Error writing to file:", err)
+		fmt.Println("写入文件时出错:", err)
 		return
 	}
+}
 
+// MoveAndRenameFile 移动并重命名文件
+func MoveAndRenameFile(srcPath, dstPath string) error {
+	err := os.Rename(srcPath, dstPath)
+	if err != nil {
+		return fmt.Errorf("移动并重命名文件时出错: %w", err)
+	}
+	return nil
 }
 
 func Build(options *FlagOptions, outfile string, framework int) {
 	outexe := getOutfileName(outfile)
 	// 执行编译命令
-	switch framework {
-	case 32:
-		switch strings.ToLower(options.Encryption) {
-		case "aes":
-			switch strings.ToLower(options.Obfuscation) {
-			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
+	switch strings.ToLower(options.Language) {
+	case "c":
+		switch framework {
+		case 32:
+			dir, _ := os.Getwd()
+			outfile = outfile
+			srcdir := filepath.Join(dir, "C_Template", outfile)
+			sysdir := filepath.Join(dir, "C_Template", "sys_32.c")
+			aesdir := filepath.Join(dir, "C_Template", "aes.c")
+			cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, srcdir, sysdir, aesdir, "-s", "-masm=intel", "-lrpcrt4")
+			// 执行命令并等待其完成
+			var stdout, stderr bytes.Buffer
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
 
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("编译失败:", err)
+				// 获取标准错误的内容
+				stderrString := stderr.String()
+				if stderrString != "" {
+					fmt.Println("标准错误:", stderrString)
 				}
-				fmt.Printf("[+] 编译成功: " + outexe)
-			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "aes.c", "-s", "-masm=intel")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
-
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
-				}
-				fmt.Printf("[+] 编译成功: " + outexe)
+				return
 			}
-		case "xor":
-			switch strings.ToLower(options.Obfuscation) {
-			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel", "-lrpcrt4")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
+			fmt.Printf("[+] 编译成功: " + outexe)
+		case 64:
+			dir, _ := os.Getwd()
+			srcdir := filepath.Join(dir, "C_Template", outfile)
+			sysdir := filepath.Join(dir, "C_Template", "sys_64.c")
+			aesdir := filepath.Join(dir, "C_Template", "aes.c")
+			cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, srcdir, sysdir, aesdir, "-s", "-masm=intel", "-lrpcrt4")
+			// 执行命令并等待其完成
+			var stdout, stderr bytes.Buffer
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
 
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("编译失败:", err)
+				// 获取标准错误的内容
+				stderrString := stderr.String()
+				if stderrString != "" {
+					fmt.Println("标准错误:", stderrString)
 				}
-				fmt.Printf("[+] 编译成功: " + outexe)
-			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, outfile, "sys_32.c", "-s", "-masm=intel")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
-
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
-				}
-				fmt.Printf("[+] 编译成功: " + outexe)
+				return
 			}
+			fmt.Printf("[+] 编译成功: " + outexe)
+		default:
+			fmt.Printf("请选择32位或者64位的操作系统")
 		}
-	case 64:
-		switch strings.ToLower(options.Encryption) {
-		case "aes":
-			switch strings.ToLower(options.Obfuscation) {
-			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel", "-lrpcrt4")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
+	case "rust":
+		dir, _ := os.Getwd()
+		dir1 := filepath.Join(dir, "Rust_Template", "Cargo.toml")
+		switch options.Framework {
+		case 64:
+			cmd := exec.Command("cargo", "build", "--manifest-path", dir1, "--release")
+			// 执行命令并等待其完成
+			var stdout, stderr bytes.Buffer
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
 
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("编译失败:", err)
+				// 获取标准错误的内容
+				stderrString := stderr.String()
+				if stderrString != "" {
+					fmt.Println("标准错误:", stderrString)
 				}
-				fmt.Printf("[+] 编译成功: " + outexe)
-			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "aes.c", "-s", "-masm=intel")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
-
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
-				}
+				return
+			}
+			fmt.Println("[+] 正在为您移动可执行文件\n")
+			dir, _ := os.Getwd()
+			dir1 := filepath.Join(dir, "Rust_Template", "target", "release", "Unhook.exe")
+			dstPath := filepath.Join(dir, outexe)
+			err = MoveAndRenameFile(dir1, dstPath)
+			if err != nil {
+				fmt.Println("移动并重命名文件时出错:", err)
+			} else {
 				fmt.Printf("[+] 编译成功: " + outexe)
 			}
-		case "xor":
-			switch strings.ToLower(options.Obfuscation) {
-			case "uuid":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel", "-lrpcrt4")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
+		case 32:
+			cmd := exec.Command("cargo", "build", "--manifest-path", dir1, "--release", "--target=i686-pc-windows-gnu")
+			// 执行命令并等待其完成
+			var stdout, stderr bytes.Buffer
+			cmd.Stdout = &stdout
+			cmd.Stderr = &stderr
 
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
+			err := cmd.Run()
+			if err != nil {
+				fmt.Println("编译失败:", err)
+				// 获取标准错误的内容
+				stderrString := stderr.String()
+				if stderrString != "" {
+					fmt.Println("标准错误:", stderrString)
 				}
-				fmt.Printf("[+] 编译成功: " + outexe)
-			case "words":
-				cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, outfile, "sys_64.c", "-s", "-masm=intel")
-				// 执行命令并等待其完成
-				var stdout, stderr bytes.Buffer
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
-
-				err := cmd.Run()
-				if err != nil {
-					fmt.Println("编译失败:", err)
-					// 获取标准错误的内容
-					stderrString := stderr.String()
-					if stderrString != "" {
-						fmt.Println("标准错误:", stderrString)
-					}
-					return
-				}
+				return
+			}
+			fmt.Println("[+] 正在为您移动可执行文件\n")
+			dir, _ := os.Getwd()
+			dir1 := filepath.Join(dir, "Rust_Template", "target", "i686-pc-windows-gnu", "release", "Unhook.exe")
+			dstPath := filepath.Join(dir, outexe)
+			err = MoveAndRenameFile(dir1, dstPath)
+			if err != nil {
+				fmt.Println("移动并重命名文件时出错:", err)
+			} else {
 				fmt.Printf("[+] 编译成功: " + outexe)
 			}
+
 		}
 	default:
-		fmt.Printf("请选择32位或者64位的操作系统")
+		println("指定语言错误")
+		os.Exit(-1)
+
 	}
+
 }
 
 // 输出文件名

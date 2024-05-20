@@ -70,8 +70,8 @@ func AESEncryption(key string, iv string, plaintext []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-// BytesToUUIDs 将字节slice分割成多个16字节的组，并转换成UUID格式的字符串切片
-func BytesToUUIDs(b []byte) ([]string, error) {
+// BytesToUUIDs_C 将字节slice分割成多个16字节的组，并转换成UUID格式的字符串切片
+func BytesToUUIDs_C(b []byte) ([]string, error) {
 	var uuids []string
 	chunkSize := 16
 
@@ -99,6 +99,39 @@ func BytesToUUIDs(b []byte) ([]string, error) {
 			hexString[8:10],
 			hexString[14:16],
 			hexString[12:14],
+			hexString[16:20],
+			hexString[20:32])
+
+		uuids = append(uuids, uuid)
+	}
+
+	return uuids, nil
+}
+
+// BytesToUUIDs_RUST 将字节slice分割成多个16字节的组，并转换成UUID格式的字符串切片
+func BytesToUUIDs_RUST(b []byte) ([]string, error) {
+	var uuids []string
+	chunkSize := 16
+
+	for len(b) > 0 {
+		// 如果剩余的字节不足16字节，则用0补足
+		if len(b) < chunkSize {
+			padding := make([]byte, chunkSize-len(b))
+			b = append(b, padding...)
+		}
+
+		// 截取16字节的组
+		chunk := b[:chunkSize]
+		b = b[chunkSize:]
+
+		// 将字节转换为十六进制字符串
+		hexString := hex.EncodeToString(chunk)
+
+		// 格式化UUID字符串
+		uuid := fmt.Sprintf("%s-%s-%s-%s-%s",
+			hexString[0:8],
+			hexString[8:12],
+			hexString[12:16],
 			hexString[16:20],
 			hexString[20:32])
 
@@ -146,21 +179,25 @@ func HexStringToBytes(hexStr string) ([]byte, error) {
 }
 
 // 混淆操作
-func Obfuscation(obfuscation string, shellcodeString string) (string, string, string) {
-	switch strings.ToLower(obfuscation) {
-	case "uuid":
-		bytes, err := HexStringToBytes(shellcodeString)
-		uuids, err := BytesToUUIDs([]byte(bytes))
-		if err != nil {
-			fmt.Println("Error:", err)
+func Obfuscation(options *Others.FlagOptions, shellcodeString string) (string, string, string) {
+	switch strings.ToLower(options.Obfuscation) {
 
+	case "uuid":
+		var uuids []string
+		bytes, _ := HexStringToBytes(shellcodeString)
+		var err error
+		switch strings.ToLower(options.Language) {
+		case "c":
+			uuids, err = BytesToUUIDs_C([]byte(bytes))
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
+		case "rust":
+			uuids, err = BytesToUUIDs_RUST([]byte(bytes))
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
 		}
-		//fmt.Printf("[+] Generated UUIDs:")
-		//// 输出UUIDs
-		//for _, uuid := range uuids {
-		//	fmt.Print("\"", uuid, "\",\n")
-		//}
-		//fmt.Println("")
 		var uuidsString string
 		for _, uuid := range uuids {
 			uuidsString += "\"" + uuid + "\","
@@ -173,15 +210,15 @@ func Obfuscation(obfuscation string, shellcodeString string) (string, string, st
 			panic(err)
 		}
 
-		err = ioutil.WriteFile("words\\enc.bin", decoded, 0644)
+		err = ioutil.WriteFile("T00ls\\enc.bin", decoded, 0644)
 		if err != nil {
 			panic(err)
 		}
 		dir, err := os.Getwd()
-		dir1 := filepath.Join(dir, "words", "Shellcode-to-English.py")
-		dir2 := filepath.Join(dir, "words", "enc.bin")
-		words_path := filepath.Join(dir, "words", "words.txt")
-		dataset_path := filepath.Join(dir, "words", "dataset.txt")
+		dir1 := filepath.Join(dir, "T00ls", "Shellcode-to-English.py")
+		dir2 := filepath.Join(dir, "T00ls", "enc.bin")
+		words_path := filepath.Join(dir, "T00ls", "words.txt")
+		dataset_path := filepath.Join(dir, "T00ls", "dataset.txt")
 		cmd := exec.Command("python", dir1, dir2)
 		// 捕获标准输出和标准错误
 		var stdout, stderr bytes.Buffer

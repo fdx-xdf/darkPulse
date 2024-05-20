@@ -1,0 +1,29 @@
+[package]
+name = "Unhook"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+
+
+
+[dependencies]
+libaes = "0.7.0"
+uuid = "1.8.0"
+[dependencies.winapi]
+version = "0.3.9"
+features = ["minwindef", "ntdef", "winnt", "winbase", "winnls"]
+ [dependencies.windows]
+ version = "0.56.0"
+ features = [
+     "Win32_Foundation",
+     "Win32_UI_WindowsAndMessaging",
+     "Win32_System_LibraryLoader",
+     "Win32_System_Memory",
+     "Win32_System_SystemServices",
+ ]
+
+
+
+

@@ -34,7 +34,7 @@ func PrintVersion() {
 	fmt.Println("  \\__,_|\\__,_|_|  |_|\\_\\_|    \\__,_|_|___/\\___|")
 	fmt.Println("                                               ")
 	fmt.Println("                    author fdx_xdf             ")
-	fmt.Println("                    version 1.2                ")
+	fmt.Println("                    version 2.0                ")
 	fmt.Println("                    2024.05                    ")
 }
 

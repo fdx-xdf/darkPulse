@@ -192,6 +192,5 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 如果遇到问题可以提交issue，也可以通过企鹅号联系我：MTM1MDE0MTk0MA==
 
 ## Stargazers over time
-
-![Stargazers over time](https://starchart.cc/fdx-xdf/darkPulse.svg?variant=adaptive)
+[![Stargazers over time](https://starchart.cc/fdx-xdf/darkPulse.svg?variant=adaptive)](https://starchart.cc/fdx-xdf/darkPulse)
 

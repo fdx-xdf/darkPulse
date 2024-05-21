@@ -1,7 +1,5 @@
 darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader,目前可过火绒，360，360核晶。
 
-目前只实现了c语言的模板。
-
 ## 特点
 
 - 使用sgn编码，使用了 [EgeBalci/sgn ](https://github.com/EgeBalci/sgn)提供的二进制文件。

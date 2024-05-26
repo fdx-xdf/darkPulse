@@ -1,4 +1,4 @@
-darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader,目前可过火绒，360，360核晶。
+darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的shellcode loader,目前可过火绒，360核晶等国内常见杀软。
 
 ## 特点
 

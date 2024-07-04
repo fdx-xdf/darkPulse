@@ -45,6 +45,8 @@ nightly-x86_64-pc-windows-gnu (default)
 
 开源之后免杀性能肯定会有所下降，但是程序提供了多个参数可以选择，有的参数组合还是可以Bypass的。
 
+程序生成的代码在Rust_Template和C_Template下，可以自定义一些东西从而避免静态查杀
+
 _            _    _____       _
 
 示例1：

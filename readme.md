@@ -156,7 +156,7 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook -debug
 
 7.25 对rust模板进行修改，可过核晶上线
 
-![image-20240725120626808](.\images\image-20240725120626808-17218810254841.png)
+![image-20240725120626808](./images/image-20240725120626808-17218810254841.png)
 
 5.20 新增Rust模板，测试如下：
 

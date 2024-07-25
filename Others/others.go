@@ -3,7 +3,6 @@ package Others
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -34,8 +33,8 @@ func PrintVersion() {
 	fmt.Println("  \\__,_|\\__,_|_|  |_|\\_\\_|    \\__,_|_|___/\\___|")
 	fmt.Println("                                               ")
 	fmt.Println("                    author fdx_xdf             ")
-	fmt.Println("                    version 2.0                ")
-	fmt.Println("                    2024.05                    ")
+	fmt.Println("                    version 2.1                ")
+	fmt.Println("                    2024.07                    ")
 }
 
 func PrintUsage() {
@@ -68,22 +67,22 @@ func PrintKeyDetails(key string) {
 }
 
 // 检查AES加密格式
-func DetectNotification(key int) int {
-	logger := log.New(os.Stderr, "[!] ", 0)
-	keyNotification := 0
-	switch key {
-	case 16:
-		keyNotification = 128
-	case 24:
-		keyNotification = 192
-	case 32:
-		keyNotification = 256
-	default:
-		logger.Fatal("Initial Error, valid AES key not found\n")
-	}
-
-	return keyNotification
-}
+//func DetectNotification(key int) int {
+//	logger := log.New(os.Stderr, "[!] ", 0)
+//	keyNotification := 0
+//	switch key {
+//	case 16:
+//		keyNotification = 128
+//	case 24:
+//		keyNotification = 192
+//	case 32:
+//		keyNotification = 256
+//	default:
+//		logger.Fatal("Initial Error, valid AES key not found\n")
+//	}
+//
+//	return keyNotification
+//}
 
 func SaveTemplateToFile(filename string, template string) {
 	// 确保目录存在
@@ -130,8 +129,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 			outfile = outfile
 			srcdir := filepath.Join(dir, "C_Template", outfile)
 			sysdir := filepath.Join(dir, "C_Template", "sys_32.c")
-			aesdir := filepath.Join(dir, "C_Template", "aes.c")
-			cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, srcdir, sysdir, aesdir, "-s", "-masm=intel", "-lrpcrt4")
+			cmd := exec.Command("gcc", "-mwindows", "-m32", "-o", outexe, srcdir, sysdir, "-s", "-masm=intel", "-lrpcrt4")
 			// 执行命令并等待其完成
 			var stdout, stderr bytes.Buffer
 			cmd.Stdout = &stdout
@@ -152,8 +150,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 			dir, _ := os.Getwd()
 			srcdir := filepath.Join(dir, "C_Template", outfile)
 			sysdir := filepath.Join(dir, "C_Template", "sys_64.c")
-			aesdir := filepath.Join(dir, "C_Template", "aes.c")
-			cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, srcdir, sysdir, aesdir, "-s", "-masm=intel", "-lrpcrt4")
+			cmd := exec.Command("gcc", "-mwindows", "-m64", "-o", outexe, srcdir, sysdir, "-s", "-masm=intel", "-lrpcrt4")
 			// 执行命令并等待其完成
 			var stdout, stderr bytes.Buffer
 			cmd.Stdout = &stdout
@@ -174,6 +171,7 @@ func Build(options *FlagOptions, outfile string, framework int) {
 			fmt.Printf("请选择32位或者64位的操作系统")
 		}
 	case "rust":
+		os.Setenv("RUSTFLAGS", "-Z threads=18")
 		dir, _ := os.Getwd()
 		dir1 := filepath.Join(dir, "Rust_Template", "Cargo.toml")
 		switch options.Framework {

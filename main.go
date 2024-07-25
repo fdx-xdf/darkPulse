@@ -15,10 +15,10 @@ import (
 //set GOARCH=amd64
 //-ldflags="-s -w" -o darkPulse.exe
 
+// -i calc_shellcode_64.bin
 func Options() *Others.FlagOptions {
 	help := flag.Bool("h", false, "使用帮助")
 	inputFile := flag.String("i", "", "原始格式 Shellcode 的路径")
-	encryption := flag.String("enc", "aes", "Shellcode加密方式 (例如, aes, xor)")
 	language := flag.String("lang", "c", "加载器的语言")
 	outFile := flag.String("o", "Program", "输出文件")
 	keyLength := flag.Int("k", 16, "加密的密钥长度，aes下只能选择16")
@@ -30,7 +30,7 @@ func Options() *Others.FlagOptions {
 	debug := flag.Bool("debug", false, "是否打印shellcode中间加密/混淆过程")
 	flag.Parse()
 
-	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, Encryption: *encryption, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique, Debug: *debug}
+	return &Others.FlagOptions{Help: *help, OutFile: *outFile, InputFile: *inputFile, Language: *language, KeyLength: *keyLength, Obfuscation: *obfuscation, Framework: *framework, Sandbox: *sandbox, Unhook: *unhook, Loading: *loadingTechnique, Debug: *debug}
 }
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 		Others.PrintUsage()
 		os.Exit(0)
 	}
-	if options.InputFile == "" || (options.Framework != 32 && options.Framework != 64) || (options.Encryption != "aes" && options.Encryption != "xor") || (options.Obfuscation != "uuid" && options.Obfuscation != "words") || (options.Loading != "fiber" && options.Loading != "callback" && options.Loading != "earlybird") {
+	if options.InputFile == "" || (options.Framework != 32 && options.Framework != 64) || (options.Obfuscation != "uuid" && options.Obfuscation != "words") || (options.Loading != "fiber" && options.Loading != "callback" && options.Loading != "earlybird") {
 		Others.PrintUsage()
 		os.Exit(0)
 	}
@@ -54,11 +54,11 @@ func main() {
 	if options.Debug == true {
 		fmt.Println("[+] 进行sgn编码后的shellcode: " + formattedHexShellcode + "\n")
 	}
-	//进行加密操作
-	hexEncryptShellcode, Key, iv := Encrypt.Encryption(shellcodeBytes, options.Encryption, options.KeyLength)
-	if options.Debug == true {
-		fmt.Println("[+] 进行加密后的shellcode: " + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
-	}
+	////进行加密操作
+	//hexEncryptShellcode, Key, iv := Encrypt.Encryption(shellcodeBytes, options.Encryption, options.KeyLength)
+	//if options.Debug == true {
+	//	fmt.Println("[+] 进行加密后的shellcode: " + Converters.FormattedHexShellcode(hexEncryptShellcode) + "\n")
+	//}
 	//进行混淆操作
 	var (
 		uuidStrings string
@@ -66,7 +66,7 @@ func main() {
 		dataset     string
 	)
 	if options.Obfuscation != "" {
-		uuidStrings, words, dataset = Encrypt.Obfuscation(options, hexEncryptShellcode)
+		uuidStrings, words, dataset = Encrypt.Obfuscation(options, hexShellcode)
 	}
 	if options.Debug == true {
 		if uuidStrings != "" {
@@ -79,7 +79,7 @@ func main() {
 	}
 
 	//生成模板并写到文件中 把所有需要的都传过去
-	outfile := Loader.GenerateAndWriteTemplateToFile(options, hexEncryptShellcode, Key, iv, uuidStrings, words, dataset)
+	outfile := Loader.GenerateAndWriteTemplateToFile(options, hexShellcode, uuidStrings, words, dataset)
 	//编译
 	Others.Build(options, outfile, options.Framework)
 }

@@ -160,29 +160,29 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook -debug
 
 5.20 新增Rust模板，测试如下：
 
-![image-{09175BED-C614-467c-80E5-893FC71A744C](.\images\{09175BED-C614-467c-80E5-893FC71A744C}-17218810254842.png)
+![image-{09175BED-C614-467c-80E5-893FC71A744C](./images/{09175BED-C614-467c-80E5-893FC71A744C}-17218810254842.png)
 
-![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](.\images\{F8DEF2E2-925B-4add-AC29-E284B698F2DB}-17218810254843.png)
+![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](./images/{F8DEF2E2-925B-4add-AC29-E284B698F2DB}-17218810254843.png)
 
 5.1日师傅们的测试
 
-![image-20240504135314215](.\images\41070139c5a430be6a6030dd41395556-17218810254844.png)
+![image-20240504135314215](./images/41070139c5a430be6a6030dd41395556-17218810254844.png)
 
 微步云沙箱无检出
 
-![image.png](.\images\1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6-17218810254845.png)
+![image.png](./images/1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6-17218810254845.png)
 
 360（未开核晶）：无检出
 
-![image](.\images\c3dcf083-609e-4b55-87c1-8311e5d28a40)
+![image](./images/c3dcf083-609e-4b55-87c1-8311e5d28a40)
 
 火绒：无检出
 
-![image.png](.\images\1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3-17218808022521.png)
+![image.png](./images/1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3-17218808022521.png)
 
 360（开启核晶）：无检出（使用syscall和unhook两种方式生成的exe均成功绕过核晶）
 
-![image.png](.\images\1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5-17218810254846.png)
+![image.png](./images/1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5-17218810254846.png)
 
 ## to do list:
 

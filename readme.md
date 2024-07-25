@@ -4,10 +4,11 @@ darkPulse是一个用go编写的shellcode Packer，用于生成各种各样的sh
 
 - 使用sgn编码，使用了 [EgeBalci/sgn ](https://github.com/EgeBalci/sgn)提供的二进制文件。
 - 支持aes/xor加密，uuid/words混淆，支持间接syscall和unhook两种模式下的callback，fiber，earlybird三种加载方式。
-
 - 间接sysacll参考了SysWhispers3的项目，链接：[klezVirus/SysWhispers3](https://github.com/klezVirus/SysWhispers3)
-
 - unhook使用了 [自定义跳转函数的unhook方法](https://killer.wtf/2022/01/19/CustomJmpUnhook.html) 文中所讲述的方法，文中提到的github仓库 [trickster0/LdrLoadDll-Unhooking](https://github.com/trickster0/LdrLoadDll-Unhooking) 只实现了64位下的demo，我在 [LdrLoadDll-Unhooking-x86-x64](https://github.com/fdx-xdf/LdrLoadDll-Unhooking-x86-x64) 中完善了32位和64位通用的一段代码。
+- 由于采用了sgn对 shellcode 加密，再次使用 aes/xor 加密反而成了特征点，现在已经取消了后者的加密。
+- 由于rust在编译words混淆模板的时间过长（实测编译cs的shellcode要40min），且单纯的uuid混淆效果不好，现在采用的方式是前百分之10的shellcode由words混淆，其余的由uuid混淆，比例可以自行在源代码中调整，目前的编译时间大约是1min。
+- 其实模板的源文件也给大家了，大家完全可以自行修改规避静态查杀，也可以改成远程加载的方式
 
 ## 使用方法
 
@@ -61,8 +62,8 @@ darkPulse.exe -i calc_shellcode.bin -h
   \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|
 
                     author fdx_xdf
-                    version 2.0
-                    2024.05
+                    version 2.1
+                    2024.07
 
 Usage:
     
@@ -83,7 +84,7 @@ Usage:
 示例2：
 
 ```
-darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
+darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook -debug
       _            _    _____       _
      | |          | |  |  __ \     | |
    __| | __ _ _ __| | _| |__) |   _| |___  ___
@@ -92,8 +93,8 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
   \__,_|\__,_|_|  |_|\_\_|    \__,_|_|___/\___|
 
                     author fdx_xdf
-                    version 1.2
-                    2024.05
+                    version 2.1
+                    2024.07
 [+] 开始为您打包exe
 
 [+] 正在使用 sgn 工具进行编码
@@ -143,7 +144,9 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ## 更新日志
 
-2024.5.20	解决了部分bug，新增 rust 模板，使用方法见上面说明
+2024.7.25  解决了部分bug，去除了对shellcode的加密，更改了rust混淆的方式，rust模板可过核晶，c模板可过火绒
+
+2024.5.20  解决了部分bug，新增 rust 模板，使用方法见上面说明
 
 2024.5.4	解决了部分bug，新增加 sgn 编码工具，增加静态规避效果
 
@@ -151,35 +154,39 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ## 实现效果
 
+7.25 对rust模板进行修改，可过核晶上线
+
+![image-20240725120626808](.\images\image-20240725120626808-17218810254841.png)
+
 5.20 新增Rust模板，测试如下：
 
-![image-{09175BED-C614-467c-80E5-893FC71A744C](./images/{09175BED-C614-467c-80E5-893FC71A744C}.png)
+![image-{09175BED-C614-467c-80E5-893FC71A744C](.\images\{09175BED-C614-467c-80E5-893FC71A744C}-17218810254842.png)
 
-![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](./images/{F8DEF2E2-925B-4add-AC29-E284B698F2DB}.png)
+![{F8DEF2E2-925B-4add-AC29-E284B698F2DB}](.\images\{F8DEF2E2-925B-4add-AC29-E284B698F2DB}-17218810254843.png)
 
 5.1日师傅们的测试
 
-![image-20240504135314215](./images/41070139c5a430be6a6030dd41395556.png)
+![image-20240504135314215](.\images\41070139c5a430be6a6030dd41395556-17218810254844.png)
 
 微步云沙箱无检出
 
-![image.png](./images/1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6.png)
+![image.png](.\images\1711596621444-4b4ab40f-7327-481f-a5f8-ca2d39330db6-17218810254845.png)
 
 360（未开核晶）：无检出
 
-![image](./images/c3dcf083-609e-4b55-87c1-8311e5d28a40)
+![image](.\images\c3dcf083-609e-4b55-87c1-8311e5d28a40)
 
 火绒：无检出
 
-![image.png](./images/1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3.png)
+![image.png](.\images\1712452727509-f3c2d4b3-90ab-448d-9335-d8ac90a3a2a3-17218808022521.png)
 
 360（开启核晶）：无检出（使用syscall和unhook两种方式生成的exe均成功绕过核晶）
 
-![image.png](./images/1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5.png)
+![image.png](.\images\1712553684319-6e2573f1-7d58-4c36-9f92-4dba958a67f5-17218810254846.png)
 
 ## to do list:
 
-- Rust 模板
+- Rust 模板的syscall部分
 - ~~更多加密算法(由于使用了sgn编码，加密其实没有那么大的必要了)~~
 - 分离加载
 - ~~- unhook~~
@@ -187,10 +194,12 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook
 
 ## 免责声明
 
+Tip: 不参加各类攻防演练以及境内外渗透项目，如溯源到本人id或者项目，纯属巧合。
+
 本项目仅用安全研究的学习交流和研究，强烈不建议您用于任何的实际途径（包括黑灰产交易、非法渗透攻击、割韭菜），网络不是法外之地！如果您使用该工具则应该自觉遵守以上要求。
 
 如果遇到问题可以提交issue，也可以通过企鹅号联系我：MTM1MDE0MTk0MA==
 
 ## Stargazers over time
-[![Stargazers over time](https://starchart.cc/fdx-xdf/darkPulse.svg?variant=adaptive)](https://starchart.cc/fdx-xdf/darkPulse)
 
+[![Stargazers over time](D:\code\ToolDevelopment\MyPacker\images\darkPulse.svg)](https://starchart.cc/fdx-xdf/darkPulse)

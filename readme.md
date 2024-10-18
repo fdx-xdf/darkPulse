@@ -194,11 +194,10 @@ darkPulse.exe -i calc_shellcode.bin -f 32 -sandbox -unhook -debug
 
 ## 免责声明
 
-Tip: 不参加各类攻防演练以及境内外渗透项目，如溯源到本人id或者项目，纯属巧合。
+Tip: 本人不参加各类攻防演练以及境内外渗透项目，如溯源到本人id或者项目，纯属巧合。
 
 本项目仅用安全研究的学习交流和研究，强烈不建议您用于任何的实际途径（包括黑灰产交易、非法渗透攻击、割韭菜），网络不是法外之地！如果您使用该工具则应该自觉遵守以上要求。
 
-如果遇到问题可以提交issue，也可以通过企鹅号联系我：MTM1MDE0MTk0MA==
 
 ## Stargazers over time
 [![Stargazers over time](https://starchart.cc/fdx-xdf/darkPulse.svg?variant=adaptive)](https://starchart.cc/fdx-xdf/darkPulse)
